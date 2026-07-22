@@ -1,0 +1,27 @@
+#ifndef PARSER_HPP
+#define PARSER_HPP
+
+#include <string>
+#include <iostream>
+#include <vector>
+
+
+class Parser
+{
+	private:
+		std::string message;
+		std::string command;
+		std::vector<std::string> parameters;
+
+	public:
+		Parser(std::string raw_message);
+		int parse_message();
+		int run_command();
+		const std::string& get_command() const;
+		const std::vector<std::string>& get_parameters() const;
+		int clear_parse();
+		bool is_valid_command(const std::string &cmd) const;
+		~Parser();
+};
+
+#endif
