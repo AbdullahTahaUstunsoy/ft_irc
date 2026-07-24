@@ -1,12 +1,26 @@
-#include <iostream>
-#include <cstring> //memset için, iostream içinde var ama garanti değil her derleyicinin kabul edeceği
-#include <sys/socket.h> //SO_REUSEADDR, SOL_SOCKET, AF_INET, SOCK_STREAM gibi sabitler de bu header'da
-#include <netinet/in.h>   // struct sockaddr_in, struct in_addr, INADDR_ANY
-#include <unistd.h> //close için
-#include <fcntl.h>  //fcntl(), F_SETFL, O_NONBLOCK için
-#include <vector>
-#include <poll.h> //poll() için
 #include "Server.hpp"
+
+void argControl(const char *argv1, const char *argv2)
+{
+    if(argv1[0] == '\0')
+        throw std::runtime_error("invalid port number");
+    for(int i = 0; argv1[i] != '\0'; i++)
+    {
+        if(!(argv1[i] > '0' && argv1[i] < '9'))
+            throw std::runtime_error("invalid port number");
+        if(i >= 5)
+            throw std::runtime_error("port number out of bounds");
+    }
+    int test = std::atoi(argv1);
+    if(!(test >= 1 && test <= 65535))
+        throw std::runtime_error("port number out of bounds");
+
+    if(argv2[0] == '\0')
+        throw std::runtime_error("invalid password");
+}
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -16,45 +30,22 @@ int main(int argc, char **argv)
         return (1);
     }
     //argümanların doğruluğunu kontrol edeceğim.
-    int opt = 1;
-    Server server;
-    server.setServerFd(socket(AF_INET, SOCK_STREAM, 0)); //fd olusturulamayabilir diye kontrol yapmalı mıyım ? dinleme soketini kuruyorum. //serverFd değişkeni oluşturabilirim.
-    setsockopt(server.getServerFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); //int dönüyor bunu kontrol etmeli miyim ? //sunucuyu kapatığ açtığımızda portun hala kullanımda olmasını önlemek için gerekiyor.
-
-    struct sockaddr_in addr;
-    std::memset(&addr, 0, sizeof(addr)); //addr değişkenini sıfırlıyorum. üstüne yazacağız ama struct'ın son değişkeni sıfırlanmıyor onu da sıfırlamak için memset kullandım. 
-
-    addr.sin_family = AF_INET; //IPv4
-    addr.sin_addr.s_addr = INADDR_ANY; //tüm IP adreslerinden gelen bağlantıları kabul et.
-    addr.sin_port = htons(std::atoi(argv[1]));
-
-    if(bind(server.getServerFd(), (struct sockaddr*)&addr, sizeof(addr)) < 0)
-    {
-        std::cerr << "Error binding socket" << std::endl;
-        close(server.getServerFd());   // ← açtığın fd'yi kapat
-        return (1); //exception fırlatabilirim.
+    try{
+        argControl(argv[1], argv[2]);
     }
-
-    if(listen(server.getServerFd(), SOMAXCONN) < 0)
-    {
-        std::cerr << "Error listening on socket" << std::endl;
-        close(server.getServerFd());   // ← açtığın fd'yi kapat
-        return (1);
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
     }
-
-    if(fcntl(server.getServerFd(), F_SETFL, O_NONBLOCK) < 0)
-    {
-        std::cerr << "Error setting socket to non-blocking" << std::endl;
-        close(server.getServerFd());
-        return (1);
+    int port = std::atoi(argv[1]);
+    try {
+        Server server(port, argv[2]);
+        server.configureServerSocket();
+        server.runServer();
     }
-
-    std::vector<struct pollfd> pollFds;
-    struct pollfd serverPollFd;
-    serverPollFd.fd = server.getServerFd();
-    serverPollFd.events = POLLIN;
-    serverPollFd.revents = 0;
-    pollFds.push_back(serverPollFd);
-
-    poll(&pollFds[0], pollFds.size(), -1);
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+    return 0;
 }
