@@ -6,7 +6,7 @@ void argControl(const char *argv1, const char *argv2)
         throw std::runtime_error("invalid port number");
     for(int i = 0; argv1[i] != '\0'; i++)
     {
-        if(!(argv1[i] > '0' && argv1[i] < '9'))
+        if(!(argv1[i] >= '0' && argv1[i] <= '9'))
             throw std::runtime_error("invalid port number");
         if(i >= 5)
             throw std::runtime_error("port number out of bounds");
