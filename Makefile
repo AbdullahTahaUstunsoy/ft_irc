@@ -1,6 +1,6 @@
 NAME = ft_irc
 
-SRCS = main.cpp src/Parser.cpp
+SRCS = main.cpp src/Parser.cpp src/Client.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

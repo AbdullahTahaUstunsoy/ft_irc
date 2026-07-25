@@ -5,41 +5,57 @@
 #include "inc/Parser.hpp"
 #include "inc/Server.hpp"
 
+
+
+void feedChunk(Client &client, const std::string &chunk)
+{
+	std::cout << ">> [fd " << client.get_fd() << "] recv() chunk: \""
+			  << chunk << "\"" << std::endl;
+
+	client.add_buffer(chunk.c_str(), chunk.size());
+
+	std::string line;
+	while (client.line_end_check(line))
+	{
+		std::cout << "   -> complete line extracted: \"" << line << "\"" << std::endl;
+
+		Parser parser(line);
+		if (parser.parse_message() == 0)
+			parser.run_command();
+	}
+}
+
 int main()
 {
-std::string irc_messages[10] = {
-	"PASS mypassword123\r\n",
-	"NICK johndoe\r\n",
-	"USER johndoe 0 * :John Doe\r\n",
-	"JOIN #general\r\n",
-	"PRIVMSG #general :Hello everyone, how are you doing?\r\n",
-	":johndoe!john@localhost PRIVMSG #general :Hey there!\r\n",
-	"QUIT :Leaving now\r\n",
-	"PING :server1\r\n",
-	"join lowercase\r\n",
-	"FOO bar baz\r\n"
-};
+	Client client1(4);
+	Client client2(5);
 
-	Parser parse(irc_messages[0]);
-	Parser parse1(irc_messages[1]);
-	Parser parse2(irc_messages[2]);
-	Parser parse3(irc_messages[3]);
-	Parser parse4(irc_messages[4]);
-	Parser parse5(irc_messages[5]);
-	Parser parse6(irc_messages[6]);
-	Parser parse7(irc_messages[7]);
-	Parser parse8(irc_messages[8]);
-	Parser parse9(irc_messages[9]);
-	parse.parse_message();
-	parse1.parse_message();
-	parse2.parse_message();
-	parse3.parse_message();
-	parse4.parse_message();
-	parse5.parse_message();
-	parse6.parse_message();
-	parse7.parse_message();
-	parse8.parse_message();
-	parse9.parse_message();
+	std::cout << "=== Client 1: message split across two recv() calls ===" << std::endl;
+	feedChunk(client1, "NICK john");
+	feedChunk(client1, "doe\r\n");
+
+	std::cout << std::endl << "=== Client 1: two full messages in one recv() ===" << std::endl;
+	feedChunk(client1, "USER johndoe 0 * :John Doe\r\nJOIN #general\r\n");
+
+	std::cout << std::endl << "=== Client 2: message split mid-way + second message ===" << std::endl;
+	feedChunk(client2, "PRIVMSG #general :Hello everyone, how are");
+	feedChunk(client2, " you doing?\r\nPING :server1\r\n");
+
+	std::cout << std::endl << "=== Client 2: three messages in one recv() ===" << std::endl;
+	feedChunk(client2, "NICK alice\r\nUSER alice 0 * :Alice A\r\nQUIT :bye\r\n");
+
+	std::cout << std::endl << "=== Client 1: lowercase + invalid command ===" << std::endl;
+	feedChunk(client1, "join lowercase\r\nFOO bar baz\r\n");
+
+	std::cout << std::endl << "=== Client 1: prefixed message ===" << std::endl;
+	feedChunk(client1, ":johndoe!john@localhost PRIVMSG #general :Hey there!\r\n");
+
+	std::cout << std::endl << "=== Client 2: partial data, no \\n yet ===" << std::endl;
+	feedChunk(client2, "KICK #general baduser");
+	std::cout << "   (correctly nothing parsed -- waiting for more data)" << std::endl;
+
+	std::cout << std::endl << "leftover in client2 buffer: \""
+			  << client2.get_buffer() << "\"" << std::endl;
 
 	return (0);
 }
