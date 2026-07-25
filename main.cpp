@@ -21,7 +21,7 @@ void feedChunk(Client &client, const std::string &chunk)
 
 		Parser parser(line);
 		if (parser.parse_message() == 0)
-			parser.run_command();
+			std::cout << "Done succesfly " << std::endl;
 	}
 }
 

@@ -16,10 +16,8 @@ class Parser
 	public:
 		Parser(std::string raw_message);
 		int parse_message();
-		int run_command();
 		const std::string& get_command() const;
 		const std::vector<std::string>& get_parameters() const;
-		int clear_parse();
 		bool is_valid_command(const std::string &cmd) const;
 		~Parser();
 };

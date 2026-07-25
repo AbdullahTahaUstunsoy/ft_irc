@@ -44,7 +44,10 @@ int Parser :: parse_message()
 			std::cout << "Command: "<< this->command << std::endl;
 		}
 		else
+		{
 			std::cout << "NO COMMAND (HATA MESAJI DÜZELTİLECEK) " << std::endl;
+			return (1);
+		}
 	}
 	while (!parse_msg.empty())
 	{
@@ -88,11 +91,6 @@ bool Parser :: is_valid_command(const std::string &cmd) const
 	return (false);
 }
 
-int Parser :: run_command()
-{
-	return (0);
-}
-
 const std::string &Parser :: get_command() const
 {
 	return (this->command);
@@ -103,13 +101,10 @@ const std::vector<std::string>& Parser:: get_parameters() const
 	return (this->parameters);
 }
 
-int Parser:: clear_parse()
-{
-	return (0);
-}
-
 Parser:: ~Parser()
-{}
+{
+	
+}
 
 
 
