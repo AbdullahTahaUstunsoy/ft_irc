@@ -50,21 +50,38 @@ void Server::removeFds()
 {
     //placeholder
 }
-void Server::acceptClients()
+void Server::acceptClients() //burada gerçek accept olmayıp mesaj olduğunda kuyruk azalmıyor ve sürekli mesaj basıyor
 {
-    std::cout << "POLLIN on server socket" << std::endl;
-}
+    int clientFd = accept(_serverFd, NULL, NULL);
+    if (clientFd < 0) //bir client'ın kabul edilememesi, sunucunun ölmesini gerektirmez. Kurulum hatalarından farkı budur.
+        return;
+    if (fcntl(clientFd, F_SETFL, O_NONBLOCK) < 0)
+    {
+        close(clientFd);
+        return;
+    }
+    addToPoll(clientFd);
+    _clients[clientFd] = new Client(clientFd); //Bu, o client'ın buffer'ına ulaşmamızı sağlıyor.
+} //Sonra duruma göre kuyruktaki herkesi döngüyle accept edebilirim. Şuan bir accept oluyor ve bir sonraki poll'da diğer accept oluyor  
+
+
 void Server::handleClients(int fd)
 {
-    (void)fd;
-    //placeholder
+    char buf[1024]; //RFC'ye göre bir IRC mesajı en fazla 512 byte (\r\n dahil), buf boyutunu değiştirebilirim.
+    ssize_t n = recv(fd, buf, sizeof(buf), 0);
 }
 
 void Server::runServer() //Reactor Pattern
 {
     while(_running)
     {
-        poll(&_pollFds[0], _pollFds.size(), -1); //dönüş değerini kontrol etmeli miyim ? dönüş değeri kaç tane file descriptor'da olay (event) gerçekleştiğini söyler. //Ctrl+C geldiğinde poll sinyal yüzünden -1 ile kesiliyor.
+        int eventCount = poll(&_pollFds[0], _pollFds.size(), -1); //dönüş değerini kontrol etmeli miyim ? dönüş değeri kaç tane file descriptor'da olay (event) gerçekleştiğini söyler. //Ctrl+C geldiğinde poll sinyal yüzünden -1 ile kesiliyor.
+        if(eventCount < 0) //bu durumda poll gerçekten başarısız olmuş olabilir veya SIGINT (CTRL + C) sinyali gelmiş olabilir. 
+        {
+            if(!_running) //bu durumda SIGINT sinyali gelmiş demektir. (CTRL + C). Henüz SIGINT handler yazmadım şu an idle duruyor
+                break; //SIGINT sinyali ile kesildiğinde exception fırlatılmasına gerek yok çünkü bu zaten kullanıcı programı kapatmak istiyor
+            throw std::runtime_error("poll failed");   
+        }
         for(size_t i = 0; i < _pollFds.size(); i++)
         {
             short revents = _pollFds[i].revents; //pollfd struct'ındaki revents short tipinde.
