@@ -74,9 +74,13 @@ void Server::handleClients(int fd)
         removableFds.insert(fd);
         return;
     }
-    _clients[fd]->add_buffer(buf,n);
+    std::map<int, Client*>::iterator it = _clients.find(fd); //iteratore geçtim çünkü [] kullanımı, olmayan anahtarı oluşturuyor. Yani fd mapte yoksa kendi oluşturup olmayan fonksiyona erişmeye çalışacak bu durumda da hata alırız.
+    if(it == _clients.end())
+        return;
+    Client* client = it->second;
+    client->add_buffer(buf,n);
     std::string line;
-    while (_clients[fd]->line_end_check(line))
+    while (client->line_end_check(line))
     {
         std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
     }
