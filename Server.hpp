@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Client.hpp"
 #include <iostream>
 #include <unistd.h>//close için
 #include <fcntl.h>//fcntl(), F_SETFL, O_NONBLOCK için

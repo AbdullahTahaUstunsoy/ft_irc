@@ -69,6 +69,17 @@ void Server::handleClients(int fd)
 {
     char buf[1024]; //RFC'ye göre bir IRC mesajı en fazla 512 byte (\r\n dahil), buf boyutunu değiştirebilirim.
     ssize_t n = recv(fd, buf, sizeof(buf), 0);
+    if(n<=0)
+    {
+        removableFds.insert(fd);
+        return;
+    }
+    _clients[fd]->add_buffer(buf,n);
+    std::string line;
+    while (_clients[fd]->line_end_check(line))
+    {
+        std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
+    }
 }
 
 void Server::runServer() //Reactor Pattern
@@ -80,16 +91,17 @@ void Server::runServer() //Reactor Pattern
         {
             if(!_running) //bu durumda SIGINT sinyali gelmiş demektir. (CTRL + C). Henüz SIGINT handler yazmadım şu an idle duruyor
                 break; //SIGINT sinyali ile kesildiğinde exception fırlatılmasına gerek yok çünkü bu zaten kullanıcı programı kapatmak istiyor
-            throw std::runtime_error("poll failed");   
+            throw std::runtime_error("poll failed");  
         }
         for(size_t i = 0; i < _pollFds.size(); i++)
         {
             short revents = _pollFds[i].revents; //pollfd struct'ındaki revents short tipinde.
             if(revents == 0) //revents 0 ise bu fd'de bir olay yok demektir. Bu yüzden döngüye devam ediyorum.
                 continue;
+            //POLLERR POLLNVAL bakılabilir
             if(_pollFds[i].fd == _serverFd) //serverfd
-            {    
-                if(revents & POLLIN) //POLLERR kontrolü gerekli mi buraya ?          
+            {
+                if(revents & POLLIN) //POLLERR kontrolü gerekli mi buraya ?
                     acceptClients();
                 continue;
             }
