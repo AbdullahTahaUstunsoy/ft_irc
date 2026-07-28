@@ -1,13 +1,13 @@
 #include "Commands.hpp"
 
-void Commands::execute(Client& client, const std::vector<std::string>& params, Server& server)
+void Commands::Pass(Client& client, const std::vector<std::string>& params, Server& server)
 {
     if (params.empty())
     {
         std::cout << "empty param for pass" << std::endl;
         return ;
     }
-    if (client.isregister())
+    if (client.is_register())
     {
         //after client class are created 
         return ;
