@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Client.hpp"
 #include <iostream>
 #include <unistd.h>//close için
 #include <fcntl.h>//fcntl(), F_SETFL, O_NONBLOCK için
@@ -13,14 +14,23 @@
 #include <string>
 #include <arpa/inet.h> //htons
 #include <cstdlib>
+#include <set>
+#include <map>
+
 class Server {
     private:
         int _serverFd;
         int _portNum;
         std::string _password;
+        bool _running;
         std::vector<struct pollfd> _pollFds;
         void addToPoll(int fd);
 
+        std::set<int> removableFds; //Kapatılacak fd'leri tutacağım. (POLLHUP ve POLLERR durumları için) //set yaptım çünkü aynı fd'yi birden fazla kez eklememek için.
+        void removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
+        void acceptClients();
+        void handleClients(int fd);
+        std::map<int, Client*> _clients;   // fd → Client
         //copy consturcor ve copy assignment'ı biz yazmasak bile derleyici otomatik yazdığı için private olarak tanımladım. yoksa sorun olabilir. (double fd close vs.)
         Server(const Server&);
         Server& operator=(const Server&);
