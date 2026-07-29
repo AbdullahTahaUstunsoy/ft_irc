@@ -30,7 +30,7 @@ class Server {
         void removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
         void acceptClients();
         void handleClients(int fd);
-        std::map<int, Client*> _clients;   // fd → Client
+        std::map<int, Client*> _clients;   // fd -> Client
         //copy consturcor ve copy assignment'ı biz yazmasak bile derleyici otomatik yazdığı için private olarak tanımladım. yoksa sorun olabilir. (double fd close vs.)
         Server(const Server&);
         Server& operator=(const Server&);

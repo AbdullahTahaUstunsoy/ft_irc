@@ -25,7 +25,6 @@ void Server::configureServerSocket()
     addr.sin_addr.s_addr = INADDR_ANY; //tüm IP adreslerinden gelen bağlantıları kabul et.
     addr.sin_port = htons(_portNum);
 
-    
     if(bind(_serverFd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
 
@@ -48,22 +47,29 @@ void Server::addToPoll(int fd)
 
 void Server::removeFds()
 {
-    for(std::set<int>::iterator it = removableFds.begin(); it != removableFds.end(); it++) //set'e erişimin tek yolu iterator. [] overload set'te yok.
+    for(std::set<int>::iterator sit = removableFds.begin(); sit != removableFds.end(); sit++) //set'e erişimin tek yolu iterator. [] overload set'te yok.
     {
-        int fd = *it;
+        int fd = *sit;
         if(fd == _serverFd)
             continue;
-        delete(_clients[fd]);
-        for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); it++)
+        for (std::vector<struct pollfd>::iterator pit = _pollFds.begin(); pit != _pollFds.end(); pit++)
         {
-            if (it->fd == fd)
+            if (pit->fd == fd)
             {
-                _pollFds.erase(it);
+                _pollFds.erase(pit);
                 break;
             }
         }
+
+        std::map<int, Client*>::iterator cit = _clients.find(fd);
+        if(cit != _clients.end())
+        {
+            delete(cit->second);
+            _clients.erase(cit);
+        }
         close(fd);
     }
+    removableFds.clear();
 }
 
 void Server::acceptClients() //burada gerçek accept olmayıp mesaj olduğunda kuyruk azalmıyor ve sürekli mesaj basıyor
