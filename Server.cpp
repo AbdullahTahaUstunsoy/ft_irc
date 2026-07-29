@@ -48,8 +48,24 @@ void Server::addToPoll(int fd)
 
 void Server::removeFds()
 {
-    //placeholder
+    for(std::set<int>::iterator it = removableFds.begin(); it != removableFds.end(); it++) //set'e erişimin tek yolu iterator. [] overload set'te yok.
+    {
+        int fd = *it;
+        if(fd == _serverFd)
+            continue;
+        delete(_clients[fd]);
+        for (std::vector<struct pollfd>::iterator it = _pollFds.begin(); it != _pollFds.end(); it++)
+        {
+            if (it->fd == fd)
+            {
+                _pollFds.erase(it);
+                break;
+            }
+        }
+        close(fd);
+    }
 }
+
 void Server::acceptClients() //burada gerçek accept olmayıp mesaj olduğunda kuyruk azalmıyor ve sürekli mesaj basıyor
 {
     int clientFd = accept(_serverFd, NULL, NULL);
@@ -117,4 +133,12 @@ void Server::runServer() //Reactor Pattern
         }
         removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
     }
+
+    /*
+    client ctrl+c yaptıktan sonra EOF olur ve if(revents & POLLIN) bloğundan handleClients'a gidilir.
+    burada da removableFds.insert(fd) olur ve return olur. ardından alttaki if bloğuna girilip burada fd tekrar insert edilmeye
+    çalışılabilir fakat biz removableFds bir set container'ı olduğu için tekrar insert edilmeye çalışılırsa bu işlem yok sayılır.
+    Bununla beraber Linux'ta normal client çıkışında (nc ctrl+c) revents çoğunlukla sadece POLLIN olur — POLLHUP set edilmiyor. Yani ikinci if çoğu zaman tetiklenmiyor bile.
+    POLLHUP daha çok anormal kopmalarda geliyor. Bizim recv == 0 yolumuz asıl mekanizma, POLLHUP kontrolü yedek güvence.
+    */
 }
