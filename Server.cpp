@@ -84,14 +84,15 @@ void Server::acceptClients() //burada gerçek accept olmayıp mesaj olduğunda k
     }
     addToPoll(clientFd);
     _clients[clientFd] = new Client(clientFd); //Bu, o client'ın buffer'ına ulaşmamızı sağlıyor.
-} //Sonra duruma göre kuyruktaki herkesi döngüyle accept edebilirim. Şuan bir accept oluyor ve bir sonraki poll'da diğer accept oluyor  
+} 
+//Sonra duruma göre kuyruktaki herkesi döngüyle accept edebilirim. Şuan bir accept oluyor ve bir sonraki poll'da diğer accept oluyor  
 
 
 void Server::handleClients(int fd)
 {
     char buf[1024]; //RFC'ye göre bir IRC mesajı en fazla 512 byte (\r\n dahil), buf boyutunu değiştirebilirim.
     ssize_t n = recv(fd, buf, sizeof(buf), 0);
-    if(n<=0)
+    if(n <= 0)
     {
         removableFds.insert(fd);
         return;
@@ -105,6 +106,7 @@ void Server::handleClients(int fd)
     while (client->line_end_check(line))
     {
         std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
+        //sendToClients(fd, "ECHO: " + line); //debug içindi
     }
 }
 
@@ -147,4 +149,11 @@ void Server::runServer() //Reactor Pattern
     Bununla beraber Linux'ta normal client çıkışında (nc ctrl+c) revents çoğunlukla sadece POLLIN olur — POLLHUP set edilmiyor. Yani ikinci if çoğu zaman tetiklenmiyor bile.
     POLLHUP daha çok anormal kopmalarda geliyor. Bizim recv == 0 yolumuz asıl mekanizma, POLLHUP kontrolü yedek güvence.
     */
+}
+
+void Server::sendToClients(int fd, const std::string& msg){
+    std::string message = msg + "\r\n";
+    ssize_t rval = send(fd, message.c_str(), message.size(), 0); //server'dam tek bir client'a veri göndermek için.
+    if(rval < 0)
+        removableFds.insert(fd);
 }

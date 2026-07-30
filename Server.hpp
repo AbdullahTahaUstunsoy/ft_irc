@@ -39,6 +39,7 @@ class Server {
         ~Server();
         void configureServerSocket();
         void runServer();
+        void sendToClients(int fd, const std::string& msg);
 };
 
 
