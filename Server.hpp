@@ -11,7 +11,7 @@
 #include <stdexcept>//std::runtime_error, std::logic_error vb. //kendi exception class'ımı oluşturabilirim
 #include <cstring>
 #include <netinet/in.h> //struct sockaddr_in, struct in_addr, INADDR_ANY
-#include <string>
+#include <cstring>
 #include <arpa/inet.h> //htons
 #include <cstdlib>
 #include <set>
@@ -25,7 +25,7 @@ class Server {
         bool _running;
         std::vector<struct pollfd> _pollFds;
         void addToPoll(int fd);
-        
+
         std::set<int> removableFds; //Kapatılacak fd'leri tutacağım. (POLLHUP ve POLLERR durumları için) //set yaptım çünkü aynı fd'yi birden fazla kez eklememek için.
         void removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
         void acceptClients();
@@ -39,10 +39,7 @@ class Server {
         ~Server();
         void configureServerSocket();
         void runServer();
-        void sendToClients(int fd, const std::string& msg);
+        void sendToClient(int fd, const std::string& msg);
 };
-
-
-
 
 #endif

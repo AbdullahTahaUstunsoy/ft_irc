@@ -1,7 +1,10 @@
 #include "Server.hpp"
 #include "Client.hpp"
+#include <csignal>
 
-Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum(port) , _password(password), _running(true)
+volatile sig_atomic_t g_running = 1;
+
+Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum(port) , _password(password)
 {
 }
 
@@ -111,24 +114,30 @@ void Server::handleClients(int fd)
     std::string line;
     while (client->line_end_check(line))
     {
-        size_t size = line.size();
-        if(!line.empty() && line[size-1] == '\n')
-            line.erase(size-1);
-        if(!line.empty() && line[size-1] == '\r')
-            line.erase(size-1);
+        if(!line.empty() && line[line.size() - 1] == '\n')
+            line.erase(line.size() - 1);
+        if(!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
         std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
-        //sendToClients(fd, "ECHO: " + line); //debug içindi
+        //sendToClient(fd, "ECHO: " + line); //debug içindi
     }
+}
+
+
+void handleSigint(int signum){
+    (void)signum;
+    g_running = 0;
 }
 
 void Server::runServer() //Reactor Pattern
 {
-    while(_running)
+    signal(SIGINT, handleSigint);
+    while(g_running)
     {
         int eventCount = poll(&_pollFds[0], _pollFds.size(), -1); //dönüş değerini kontrol etmeli miyim ? dönüş değeri kaç tane file descriptor'da olay (event) gerçekleştiğini söyler. //Ctrl+C geldiğinde poll sinyal yüzünden -1 ile kesiliyor.
         if(eventCount < 0) //bu durumda poll gerçekten başarısız olmuş olabilir veya SIGINT (CTRL + C) sinyali gelmiş olabilir. 
         {
-            if(!_running) //bu durumda SIGINT sinyali gelmiş demektir. (CTRL + C). Henüz SIGINT handler yazmadım şu an idle duruyor
+            if(!g_running) //bu durumda SIGINT sinyali gelmiş demektir. (CTRL + C).
                 break; //SIGINT sinyali ile kesildiğinde exception fırlatılmasına gerek yok çünkü bu zaten kullanıcı programı kapatmak istiyor
             throw std::runtime_error("poll failed");  
         }
@@ -162,7 +171,7 @@ void Server::runServer() //Reactor Pattern
     */
 }
 
-void Server::sendToClients(int fd, const std::string& msg){
+void Server::sendToClient(int fd, const std::string& msg){
     std::string message = msg + "\r\n";
     ssize_t rval = send(fd, message.c_str(), message.size(), 0); //server'dam tek bir client'a veri göndermek için.
     if(rval < 0)
