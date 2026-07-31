@@ -4,17 +4,22 @@ void Commands::Nick(Client& client, const std::vector<std::string>& params, Serv
 {
     if (params.empty())
     {
-        std::cout << "empty param for nick" << std::endl;
+        client.send_message("empty param",client.get_fd());
         return ;
     }
-    if (is_nick_unique(params[0]))
+    if (!client.get_pass())
     {
-        set_nick_name(params[0]);
+        client.send_message("pass false",client.get_fd());
+        return ;
+    }
+    if (server.is_nick_unique(params[0]))
+    {
+        client.set_nick_name(params[0]);
         return ;
     }
     else
     {
-        std::cout << "nick in use" << std::endl;
+        client.send_message("nick in use", client.get_fd());
         return ;
     }
 }

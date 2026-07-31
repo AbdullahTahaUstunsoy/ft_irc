@@ -2,19 +2,30 @@
 #define CLIENT_HPP
 
 #include <iostream>
+#include <sys/socket.h>
 
 class Client
 {
 	private:
 		int _fd;
+		std::string nickname;
+    	std::string username;
 		std::string buffer;
-		
-		public:
+		bool registered;
+		bool pass;
+	public:
 		Client(int fd);
 		int get_fd();
 		void add_buffer(const char *data, size_t len);
 		bool line_end_check(std::string &line);
 		std::string get_buffer();
+		std::string get_nickname();
+		bool get_pass();
+		bool is_register();
+		void set_pass();
+		void set_register();
+		void set_nick_name(std::string nick);
+		void send_message(std::string msg, int client_fd);
 		~Client();
 };
 

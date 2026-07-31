@@ -118,3 +118,18 @@ void Server::runServer() //Reactor Pattern
         removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
     }
 }
+
+// for commands function
+
+bool Server::is_nick_unique(std::string nick)
+{
+    std::map<int, Client*>::iterator it;
+    it = _clients.begin();
+
+    for (it; it != _clients.end(); it++)
+    {
+        if (it->second->get_nickname() == nick)
+            return (false);
+    }
+    return (true);
+}

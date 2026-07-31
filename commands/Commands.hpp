@@ -1,7 +1,8 @@
-#include "./Client.hpp"
-#include "./Server.hpp"
+#include "../Client.hpp"
+#include "../Server.hpp"
 #include <vector>
 #include <iostream>
+#include <sys/socket.h>
 
 class Commands
 {

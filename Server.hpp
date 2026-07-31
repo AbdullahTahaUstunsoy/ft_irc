@@ -35,6 +35,7 @@ class Server {
         Server(const Server&);
         Server& operator=(const Server&);
     public:
+        bool is_nick_unique(std::string nick);
         Server (int port, const std::string& password);
         ~Server();
         void configureServerSocket();

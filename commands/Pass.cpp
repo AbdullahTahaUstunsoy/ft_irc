@@ -4,17 +4,18 @@ void Commands::Pass(Client& client, const std::vector<std::string>& params, Serv
 {
     if (params.empty())
     {
-        std::cout << "empty param for pass" << std::endl;
+        client.send_message("empty param for pass", client.get_fd());
         return ;
     }
     if (client.is_register())
     {
-        //after client class are created 
+        client.send_message("user aldready register", client.get_fd());
         return ;
     }
     if (params[0] != Commands::password)
     {
-        std::cout << "password does not match" << std::endl;
+        client.send_message("password does not match", client.get_fd());
         return ;
     }
+    client.set_pass();
 }
