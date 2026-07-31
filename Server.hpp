@@ -25,7 +25,7 @@ class Server {
         bool _running;
         std::vector<struct pollfd> _pollFds;
         void addToPoll(int fd);
-
+        
         std::set<int> removableFds; //Kapatılacak fd'leri tutacağım. (POLLHUP ve POLLERR durumları için) //set yaptım çünkü aynı fd'yi birden fazla kez eklememek için.
         void removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
         void acceptClients();

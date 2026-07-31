@@ -7,6 +7,12 @@ Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum
 
 Server::~Server()
 {
+    for(std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); it++)
+    {
+        close(it->first);
+        delete (it->second);
+    }
+    _clients.clear();
     if (_serverFd >= 0)
         close(_serverFd);
 }
@@ -54,7 +60,7 @@ void Server::removeFds()
             continue;
         for (std::vector<struct pollfd>::iterator pit = _pollFds.begin(); pit != _pollFds.end(); pit++)
         {
-            if (pit->fd == fd)
+            if (pit->fd == fd) 
             {
                 _pollFds.erase(pit);
                 break;
@@ -105,6 +111,11 @@ void Server::handleClients(int fd)
     std::string line;
     while (client->line_end_check(line))
     {
+        size_t size = line.size();
+        if(!line.empty() && line[size-1] == '\n')
+            line.erase(size-1);
+        if(!line.empty() && line[size-1] == '\r')
+            line.erase(size-1);
         std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
         //sendToClients(fd, "ECHO: " + line); //debug içindi
     }
