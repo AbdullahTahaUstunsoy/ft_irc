@@ -29,7 +29,6 @@ int main(int argc, char **argv)
         std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
         return (1);
     }
-    //argümanların doğruluğunu kontrol edeceğim.
     try{
         argControl(argv[1], argv[2]);
     }
@@ -47,6 +46,5 @@ int main(int argc, char **argv)
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
-    
     return 0;
 }
