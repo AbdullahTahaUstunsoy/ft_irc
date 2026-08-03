@@ -95,7 +95,7 @@ void Server::removeFds()
     removableFds.clear();
 }
 
-void Server::acceptClients()
+void Server::acceptClients() //burası döngüye alınabilir
 {
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
@@ -133,7 +133,7 @@ void Server::handleClients(int fd)
     client->add_buffer(buf,n);
     std::string line;
     while (client->line_end_check(line))
-        removeCRLF(line);
+        removeCRLF(line);   
 }
 
 void handleSigint(int signum)
@@ -165,6 +165,7 @@ void Server::handlePollEvents()
 void Server::runServer() //Reactor Pattern
 {
     signal(SIGINT, handleSigint);
+    signal(SIGPIPE, SIG_IGN);
     while(g_running)
     {
         if(poll(&_pollFds[0], _pollFds.size(), -1) < 0) 
@@ -178,7 +179,8 @@ void Server::runServer() //Reactor Pattern
     }
 }
 
-void Server::sendToClient(int fd, const std::string& msg){
+void Server::sendToClient(int fd, const std::string& msg) //errno'ya bakmaya gerek var mı gerçekten EAGAIN ECONNRESET
+{
     std::string message = msg + "\r\n";
     ssize_t rval = send(fd, message.c_str(), message.size(), 0);
     if (rval < 0)
