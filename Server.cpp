@@ -109,6 +109,14 @@ void Server::acceptClients()
     _clients[clientFd] = new Client(clientFd);
 } 
 
+void Server::removeCRLF(std::string& line)
+{
+    if(!line.empty() && line[line.size() - 1] == '\n')
+        line.erase(line.size() - 1);
+    if(!line.empty() && line[line.size() - 1] == '\r')
+        line.erase(line.size() - 1);
+}
+
 void Server::handleClients(int fd)
 {
     char buf[1024];
@@ -119,18 +127,13 @@ void Server::handleClients(int fd)
         return;
     }
     std::map<int, Client*>::iterator it = _clients.find(fd);
+    if(it == _clients.end())
         return;
     Client* client = it->second;
     client->add_buffer(buf,n);
     std::string line;
     while (client->line_end_check(line))
-    {
-        if(!line.empty() && line[line.size() - 1] == '\n')
-            line.erase(line.size() - 1);
-        if(!line.empty() && line[line.size() - 1] == '\r')
-            line.erase(line.size() - 1);
-        std::cout << "[" << fd << "] " << line << std::endl; //debug için, sileceğim
-    }
+        removeCRLF(line);
 }
 
 void handleSigint(int signum)
@@ -139,34 +142,38 @@ void handleSigint(int signum)
     g_running = 0;
 }
 
+void Server::handlePollEvents()
+{
+    for(size_t i = 0; i < _pollFds.size(); i++)
+    {
+        short revents = _pollFds[i].revents;
+        if(revents == 0)
+            continue;
+        if(_pollFds[i].fd == _serverFd)
+        {
+            if(revents & POLLIN)
+                acceptClients();
+            continue;
+        }
+        if(revents & POLLIN)
+            handleClients(_pollFds[i].fd);
+        if(revents & (POLLHUP | POLLERR))
+            removableFds.insert(_pollFds[i].fd);
+    }
+}
+
 void Server::runServer() //Reactor Pattern
 {
     signal(SIGINT, handleSigint);
     while(g_running)
     {
-        int eventCount = poll(&_pollFds[0], _pollFds.size(), -1); 
-        if(eventCount < 0) 
+        if(poll(&_pollFds[0], _pollFds.size(), -1) < 0) 
         {
             if(!g_running)
                 break;
             throw std::runtime_error("poll failed");  
         }
-        for(size_t i = 0; i < _pollFds.size(); i++)
-        {
-            short revents = _pollFds[i].revents;
-            if(revents == 0)
-                continue;
-            if(_pollFds[i].fd == _serverFd)
-            {
-                if(revents & POLLIN)
-                    acceptClients();
-                continue;
-            }
-            if(revents & POLLIN)
-                handleClients(_pollFds[i].fd);
-            if(revents & (POLLHUP | POLLERR))
-                removableFds.insert(_pollFds[i].fd);
-        }
+        handlePollEvents();
         removeFds();
     }
 }
@@ -174,5 +181,6 @@ void Server::runServer() //Reactor Pattern
 void Server::sendToClient(int fd, const std::string& msg){
     std::string message = msg + "\r\n";
     ssize_t rval = send(fd, message.c_str(), message.size(), 0);
+    if (rval < 0)
         removableFds.insert(fd);
 }

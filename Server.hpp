@@ -27,10 +27,13 @@ class Server {
 
         std::set<int> removableFds;
         sockaddr_in configureSockAddrIn(int portNum);
+        void removeFds();
         void removeFromPoll(int fd);
         void removeClient(int fd);
+        void removeCRLF(std::string& line);
+        void handlePollEvents();
 
-        void removeFds();
+
         void acceptClients();
         void handleClients(int fd);
         std::map<int, Client*> _clients;
