@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include "Client.hpp"
 #include <csignal>
+#include <cerrno>
 
 volatile sig_atomic_t g_running = 1;
 
@@ -184,5 +185,8 @@ void Server::sendToClient(int fd, const std::string& msg) //errno'ya bakmaya ger
     std::string message = msg + "\r\n";
     ssize_t rval = send(fd, message.c_str(), message.size(), 0);
     if (rval < 0)
-        removableFds.insert(fd);
+    {
+        if (errno == EPIPE || errno == ECONNRESET) //EAGAIN EWOULDBACK < 0 ama fd'nin kaldırılmasını gerektirmiyor
+            removableFds.insert(fd);
+    }
 }

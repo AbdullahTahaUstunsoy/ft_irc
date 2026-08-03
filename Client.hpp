@@ -8,8 +8,8 @@ class Client
 	private:
 		int _fd;
 		std::string buffer;
-		
-		public:
+		std::string _sendBuffer;
+	public:
 		Client(int fd);
 		int get_fd();
 		void add_buffer(const char *data, size_t len);
