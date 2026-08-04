@@ -126,10 +126,27 @@ bool Server::is_nick_unique(std::string nick)
     std::map<int, Client*>::iterator it;
     it = _clients.begin();
 
-    for (it; it != _clients.end(); it++)
+    for (it = _clients.begin(); it != _clients.end(); it++)
     {
         if (it->second->get_nickname() == nick)
             return (false);
     }
     return (true);
+}
+
+int Server::get_client_fd(std::string nick)
+{
+    std::map<int, Client*>::iterator it;
+
+    for (it = _clients.begin(); it != _clients.end(); it++)
+    {
+        if (it->second->get_nickname() == nick)
+            return (it->first);
+    }
+    return (-1);
+}
+
+void Server::quit_util(int fd, std::string message)
+{
+    //removeClient
 }

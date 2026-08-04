@@ -1,6 +1,6 @@
 #include "Commands.hpp"
 
-void Commands::Ping(Client& client, const std::vector<std::string>& params, Server& server)
+void Commands::Ping(Client& client, const std::vector<std::string>& params)
 {
     if (params.empty())
     {
@@ -9,6 +9,5 @@ void Commands::Ping(Client& client, const std::vector<std::string>& params, Serv
     }
     std::string std = params[0];
     std::string stdmsg = "PONG " + std + "\r\n";
-    
-    // the stdmsg should send back 
+    client.send_message(stdmsg,client.get_fd());
 }

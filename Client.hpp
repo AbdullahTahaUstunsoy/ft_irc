@@ -10,6 +10,7 @@ class Client
 		int _fd;
 		std::string nickname;
     	std::string username;
+		std::string realname;
 		std::string buffer;
 		bool registered;
 		bool pass;
@@ -25,6 +26,8 @@ class Client
 		void set_pass();
 		void set_register();
 		void set_nick_name(std::string nick);
+		void set_user_name(std::string user);
+		void set_real_name(std::string realname);
 		void send_message(std::string msg, int client_fd);
 		~Client();
 };

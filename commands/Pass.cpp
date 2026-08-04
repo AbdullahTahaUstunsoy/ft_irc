@@ -1,6 +1,8 @@
 #include "Commands.hpp"
 
-void Commands::Pass(Client& client, const std::vector<std::string>& params, Server& server)
+std::string Commands::password;
+
+void Commands::Pass(Client& client, const std::vector<std::string>& params)
 {
     if (params.empty())
     {

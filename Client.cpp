@@ -40,6 +40,18 @@ void Client::set_nick_name(std::string nick)
 	this->nickname = nick;
 }
 
+void Client::set_user_name(std::string user)
+{
+	this->username = user;
+	return ;
+}
+
+void Client::set_real_name(std::string realname)
+{
+	this->realname = realname;
+	return ;
+}
+
 int Client ::  get_fd()
 {
 	return (this->_fd);

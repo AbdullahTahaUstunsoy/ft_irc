@@ -35,6 +35,8 @@ class Server {
         Server(const Server&);
         Server& operator=(const Server&);
     public:
+        void quit_util(int fd, std::string message);
+        int get_client_fd(std::string nick);
         bool is_nick_unique(std::string nick);
         Server (int port, const std::string& password);
         ~Server();
