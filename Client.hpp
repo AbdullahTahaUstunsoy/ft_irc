@@ -14,6 +14,7 @@ class Client
 		std::string buffer;
 		bool registered;
 		bool pass;
+		std::string _sendBuffer;
 	public:
 		Client(int fd);
 		int get_fd();

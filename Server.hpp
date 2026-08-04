@@ -3,16 +3,16 @@
 
 #include "Client.hpp"
 #include <iostream>
-#include <unistd.h>//close için
-#include <fcntl.h>//fcntl(), F_SETFL, O_NONBLOCK için
+#include <unistd.h>
+#include <fcntl.h>
 #include <vector>
 #include <poll.h>
 #include <sys/socket.h>
-#include <stdexcept>//std::runtime_error, std::logic_error vb. //kendi exception class'ımı oluşturabilirim
+#include <stdexcept>
 #include <cstring>
-#include <netinet/in.h> //struct sockaddr_in, struct in_addr, INADDR_ANY
-#include <string>
-#include <arpa/inet.h> //htons
+#include <netinet/in.h>
+#include <cstring>
+#include <arpa/inet.h>
 #include <cstdlib>
 #include <set>
 #include <map>
@@ -22,16 +22,22 @@ class Server {
         int _serverFd;
         int _portNum;
         std::string _password;
-        bool _running;
         std::vector<struct pollfd> _pollFds;
         void addToPoll(int fd);
 
-        std::set<int> removableFds; //Kapatılacak fd'leri tutacağım. (POLLHUP ve POLLERR durumları için) //set yaptım çünkü aynı fd'yi birden fazla kez eklememek için.
-        void removeFds(); //removableFds'deki fd'leri kapatıp _pollFds'den sileceğiz.
+        std::set<int> removableFds;
+        sockaddr_in configureSockAddrIn(int portNum);
+        void removeFds();
+        void removeFromPoll(int fd);
+        void removeClient(int fd);
+        void removeCRLF(std::string& line);
+        void handlePollEvents();
+
+
         void acceptClients();
         void handleClients(int fd);
-        std::map<int, Client*> _clients;   // fd → Client
-        //copy consturcor ve copy assignment'ı biz yazmasak bile derleyici otomatik yazdığı için private olarak tanımladım. yoksa sorun olabilir. (double fd close vs.)
+        std::map<int, Client*> _clients;
+        
         Server(const Server&);
         Server& operator=(const Server&);
     public:
@@ -42,9 +48,7 @@ class Server {
         ~Server();
         void configureServerSocket();
         void runServer();
+        void sendToClient(int fd, const std::string& msg);
 };
-
-
-
 
 #endif

@@ -19,9 +19,6 @@ void argControl(const char *argv1, const char *argv2)
         throw std::runtime_error("invalid password");
 }
 
-
-
-
 int main(int argc, char **argv)
 {
     if (argc != 3)
@@ -29,7 +26,6 @@ int main(int argc, char **argv)
         std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
         return (1);
     }
-    //argümanların doğruluğunu kontrol edeceğim.
     try{
         argControl(argv[1], argv[2]);
     }
