@@ -47,7 +47,7 @@ class Server {
         void quit_util(int fd, std::string message);
         int get_client_fd(std::string nick);
         bool is_nick_unique(std::string nick);
-        void create_channel(std::string name, Client* client);
+        Channel* create_channel(std::string name, Client* client);
         Channel* is_channel_exist(std::string channel_name);
         Server (int port, const std::string& password);
         ~Server();

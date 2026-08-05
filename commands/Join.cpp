@@ -1,7 +1,8 @@
 #include "Commands.hpp"
 
-void Commands::Join(Client& client, const std::vector<std::string>& params, Server& server, Channel& channel)
+void Commands::Join(Client& client, const std::vector<std::string>& params, Server& server)
 {
+    Channel* target_channel;
     if (params.empty())
     {
         client.send_message("Not enough parameters", client.get_fd());
@@ -17,12 +18,9 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
         client.send_message(params[0] + "No such channel", client.get_fd());
         return ;
     }
-    if (server.is_channel_exist(params[0]))
-    {
-        channel.add_member(&client);
-    }
+    target_channel = server.is_channel_exist(params[0]);
+    if (target_channel)
+        target_channel->add_member(&client);
     else
-    {
-        server.create_channel(params[0], &client);
-    }
+        target_channel = server.create_channel(params[0], &client);
 }

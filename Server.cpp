@@ -235,9 +235,11 @@ Channel* Server::is_channel_exist(std::string channel_name)
     return (NULL);
 }
 
-void Server::create_channel(std::string name, Client* client)
+Channel* Server::create_channel(std::string name, Client* client)
 {
     Channel* new_channel = new Channel(name);
     channels[name] = new_channel;
     new_channel->add_member(client);
+    new_channel->add_operator(client->get_fd());
+    return (new_channel);
 }

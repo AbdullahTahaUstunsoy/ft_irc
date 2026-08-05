@@ -14,12 +14,18 @@ class Channel
         bool invite_only;
         int member_limit;
         std::map<int, Client*> _members;
+        std::vector<int> operators;
     public:
         Channel(std::string name);
         ~Channel();
         int get_member_limit();
         std::string get_name();
+        std::string get_password();
+        std::string get_topic();
+        void set_topic(std::string topic);
+        void set_password(std::string topic);
         void add_member(Client* client);
+        void add_operator(int fd);
         std::string get_topic();
 };
 
