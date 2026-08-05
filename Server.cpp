@@ -222,3 +222,22 @@ void Server::quit_util(int fd, std::string message)
 {
     //removeClient
 }
+
+Channel* Server::is_channel_exist(std::string channel_name)
+{
+    std::map<std::string, Channel*>::iterator it;
+
+    for (it = channels.begin(); it != channels.end(); it++)
+    {
+        if (it->first == channel_name)
+            return (it->second);
+    }
+    return (NULL);
+}
+
+void Server::create_channel(std::string name, Client* client)
+{
+    Channel* new_channel = new Channel(name);
+    channels[name] = new_channel;
+    new_channel->add_member(client);
+}

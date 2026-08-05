@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <sys/socket.h>
+#include "../Channel.hpp"
 
 class Commands
 {
@@ -15,4 +16,5 @@ class Commands
         static void Ping(Client& client, const std::vector<std::string>& params);
         static void Privmsg(Client& client, const std::vector<std::string>& params, Server& server);
         static void Quit(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Join(Client& client, const std::vector<std::string>& params, Server& server, Channel& channel);
 };

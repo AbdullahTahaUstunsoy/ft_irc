@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <set>
 #include <map>
+#include "Channel.hpp"
 
 class Server {
     private:
@@ -40,10 +41,14 @@ class Server {
         
         Server(const Server&);
         Server& operator=(const Server&);
+
+        std::map<std::string, Channel*> channels;
     public:
         void quit_util(int fd, std::string message);
         int get_client_fd(std::string nick);
         bool is_nick_unique(std::string nick);
+        void create_channel(std::string name, Client* client);
+        Channel* is_channel_exist(std::string channel_name);
         Server (int port, const std::string& password);
         ~Server();
         void configureServerSocket();
