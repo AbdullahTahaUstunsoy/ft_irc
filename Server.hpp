@@ -11,7 +11,6 @@
 #include <stdexcept>
 #include <cstring>
 #include <netinet/in.h>
-#include <cstring>
 #include <arpa/inet.h>
 #include <cstdlib>
 #include <set>
@@ -26,11 +25,10 @@ class Server {
         void addToPoll(int fd);
 
         std::set<int> removableFds;
-        sockaddr_in configureSockAddrIn(int portNum);
+        sockaddr_in configureSockAddrIn() const;
         void removeFds();
         void removeFromPoll(int fd);
         void removeClient(int fd);
-        void removeCRLF(std::string& line);
         void handlePollEvents();
 
 
@@ -38,6 +36,7 @@ class Server {
         void handleClients(int fd);
         std::map<int, Client*> _clients;
         
+
         Server(const Server&);
         Server& operator=(const Server&);
     public:
@@ -46,6 +45,9 @@ class Server {
         void configureServerSocket();
         void runServer();
         void sendToClient(int fd, const std::string& msg);
+
+        const std::string& getPassword() const;
+		Client* getClient(int fd);  
 };
 
 #endif

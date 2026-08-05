@@ -1,4 +1,6 @@
 #include "Client.hpp"
+#include "Server.hpp"
+#include <map>
 
 Client :: Client(int fd) : _fd(fd)
 {}

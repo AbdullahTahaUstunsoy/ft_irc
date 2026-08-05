@@ -8,7 +8,6 @@ class Client
 	private:
 		int _fd;
 		std::string buffer;
-		std::string _sendBuffer;
 	public:
 		Client(int fd);
 		int get_fd();
