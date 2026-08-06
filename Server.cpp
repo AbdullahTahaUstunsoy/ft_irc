@@ -1,7 +1,5 @@
 #include "Server.hpp"
-#include "Client.hpp"
 #include <csignal>
-#include <cerrno>
 
 volatile sig_atomic_t g_running = 1;
 
@@ -21,7 +19,21 @@ Server::~Server()
         close(_serverFd);
 }
 
-sockaddr_in Server::configureSockAddrIn(int _portNum)
+const std::string& Server::getPassword() const //parser'a lazım olacak
+{
+    return _password;
+}
+
+Client* Server::getClient(int fd) //parser'a lazım olacak
+{
+	std::map<int, Client*>::iterator it = _clients.find(fd);
+    if(it != _clients.end())
+        return (it->second);
+    return NULL;
+}
+
+
+sockaddr_in Server::configureSockAddrIn() const
 {
     sockaddr_in addr;
     std::memset(&addr, 0, sizeof(addr));
@@ -41,7 +53,7 @@ void Server::configureServerSocket()
     int opt = 1;
     if (setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
         throw std::runtime_error("setsockopt failed");
-    sockaddr_in addr = configureSockAddrIn(_portNum);
+    sockaddr_in addr = configureSockAddrIn();
     if(bind(_serverFd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("bind failed");
     if(listen(_serverFd, SOMAXCONN) < 0)
@@ -110,7 +122,7 @@ void Server::acceptClients() //burası döngüye alınabilir
     _clients[clientFd] = new Client(clientFd);
 } 
 
-void Server::removeCRLF(std::string& line)
+static void removeCRLF(std::string& line)
 {
     if(!line.empty() && line[line.size() - 1] == '\n')
         line.erase(line.size() - 1);
@@ -134,7 +146,17 @@ void Server::handleClients(int fd)
     client->add_buffer(buf,n);
     std::string line;
     while (client->line_end_check(line))
-        removeCRLF(line);   
+    {
+        removeCRLF(line);
+        if (line.empty())
+            continue;
+        //parser çağrısı buraya
+    }
+    if (client->get_buffer().size() > 512)//IRC mesaj sınırı. 512 byte'ı aşıp hâlâ tam satır olmayan veri, protokol ihlalidir — o bağlantıyı kesmek meşru. IRC'nin sınırı bir mesaj için: \r\n dahil en fazla 512 byte.
+    {
+        removableFds.insert(fd);
+        return;
+    }
 }
 
 void handleSigint(int signum)
@@ -180,15 +202,13 @@ void Server::runServer() //Reactor Pattern
     }
 }
 
-void Server::sendToClient(int fd, const std::string& msg) //errno'ya bakmaya gerek var mı gerçekten EAGAIN ECONNRESET
+void Server::sendToClient(int fd, const std::string& msg) //errno'ya bakmayacağız subjectte errno'ya göre hareket etmeyin yazıyor.
 {
     std::string message = msg + "\r\n";
     ssize_t rval = send(fd, message.c_str(), message.size(), 0);
     if (rval < 0)
-    {
-        if (errno == EPIPE || errno == ECONNRESET) //EAGAIN EWOULDBACK < 0 ama fd'nin kaldırılmasını gerektirmiyor
-            removableFds.insert(fd);
-    }
+        removableFds.insert(fd);
+    
 }
 
 // for commands function
