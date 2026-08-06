@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include "Client.hpp"
+#include <vector>
 
 class Channel
 {
@@ -11,7 +12,7 @@ class Channel
         std::string topic;
         std::string name;
         std::string password;
-        bool invite_only;
+        //bool invite_only;
         int member_limit;
         std::map<int, Client*> _members;
         std::vector<int> operators;
@@ -21,11 +22,11 @@ class Channel
         int get_member_limit();
         std::string get_name();
         std::string get_password();
-        std::string get_topic();
         void set_topic(std::string topic);
         void set_password(std::string topic);
         void add_member(Client* client);
         void add_operator(int fd);
+        void broadcast_message(std::string& message, int fd );
         std::string get_topic();
 };
 

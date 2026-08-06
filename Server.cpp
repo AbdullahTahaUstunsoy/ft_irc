@@ -133,6 +133,7 @@ static void removeCRLF(std::string& line)
 void Server::handleClients(int fd)
 {
     char buf[1024];
+    Parser parser;
     ssize_t n = recv(fd, buf, sizeof(buf), 0);
     if(n <= 0)
     {
@@ -150,7 +151,9 @@ void Server::handleClients(int fd)
         removeCRLF(line);
         if (line.empty())
             continue;
-        //parser çağrısı buraya
+        parser.get_message(line);
+        parser.parse_message();
+        Commands::run_command(*client, parser.get_command(), parser.get_parameters(), *this);
     }
     if (client->get_buffer().size() > 512)//IRC mesaj sınırı. 512 byte'ı aşıp hâlâ tam satır olmayan veri, protokol ihlalidir — o bağlantıyı kesmek meşru. IRC'nin sınırı bir mesaj için: \r\n dahil en fazla 512 byte.
     {
@@ -240,6 +243,8 @@ int Server::get_client_fd(std::string nick)
 
 void Server::quit_util(int fd, std::string message)
 {
+    (void)fd;
+    (void)message;
     //removeClient
 }
 

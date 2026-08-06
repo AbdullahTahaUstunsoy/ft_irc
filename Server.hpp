@@ -16,6 +16,8 @@
 #include <set>
 #include <map>
 #include "Channel.hpp"
+#include "Parser.hpp"
+#include "commands/Commands.hpp"
 
 class Server {
     private:

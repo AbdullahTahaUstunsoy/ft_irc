@@ -2,7 +2,7 @@
 
 void Commands::Privmsg(Client& client, const std::vector<std::string>& params, Server& server)
 {
-    if (params.size() != 2)
+    if (params.size() != 1 && params.size() != 2)
     {
         client.send_message("params error", client.get_fd());
         return ;
@@ -14,11 +14,19 @@ void Commands::Privmsg(Client& client, const std::vector<std::string>& params, S
     }
     else
     {
-        if (server.get_client_fd(params[0]) == -1)
+        if (params.size() == 1)
         {
-            client.send_message("there is no user with this nick", client.get_fd());
-            return ;
+            if (server.get_client_fd(params[0]) == -1)
+            {
+                client.send_message("there is no user with this nick", client.get_fd());
+                return ;
+            }
+            client.send_message(params[1], server.get_client_fd(params[0]));
         }
-        client.send_message(params[1], server.get_client_fd(params[0]));
+        else
+        {
+            
+        }
+
     }
 }

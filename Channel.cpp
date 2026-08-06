@@ -35,10 +35,6 @@ void Channel::set_password(std::string password)
     this->password = password;
 }
 
-std::string Channel::get_topic()
-{
-    return(topic);
-}
 
 std::string Channel::get_password()
 {
@@ -53,4 +49,9 @@ void Channel::add_member(Client* client)
 void Channel::add_operator(int fd)
 {
     operators.push_back(fd);
+}
+
+void Channel::broadcast_message(std::string& message, int fd)
+{
+    
 }

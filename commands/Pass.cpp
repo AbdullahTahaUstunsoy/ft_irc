@@ -1,8 +1,8 @@
 #include "Commands.hpp"
 
-std::string Commands::password;
+// std::string Commands::password;
 
-void Commands::Pass(Client& client, const std::vector<std::string>& params)
+void Commands::Pass(Client& client, const std::vector<std::string>& params, Server& server)
 {
     if (params.empty())
     {
@@ -14,7 +14,7 @@ void Commands::Pass(Client& client, const std::vector<std::string>& params)
         client.send_message("user aldready register", client.get_fd());
         return ;
     }
-    if (params[0] != Commands::password)
+    if (params[0] != server.getPassword())
     {
         client.send_message("password does not match", client.get_fd());
         return ;
