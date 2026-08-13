@@ -38,12 +38,12 @@ IRC is a text-based communication protocol. IRC was developed in 1988 by Jarkko 
 
 This project is about creating an IRC server by implementing IRC (Internet Relay Chat), a text-based communication protocol. The goal of this project is to make sure that clients can properly communicate with each other through the IRC server. The IRC clients were created, in the way the subject allows, either through nc (netcat) from the terminal or through an IRC client application, in order to test our IRC server (we used irssi). Thanks to the IRC server we developed in this project, clients can communicate with each other through the server, and they can join channels and interact. In order to understand the project better, let's talk about some features of the server and some concepts.
 
-  #### Requirements
+#### Requirements
 - Only 1 poll() can be used to handle all operations.
 - The server must be able to handle multiple clients simultaneously without hanging.
 - All input/output operations must be non-blocking.
 
-  #### Concepts
+#### Concepts
 - **Server:** The program that accepts incoming connections from clients and manages their communication.
 - **Client:** The program that connects to the server and sends and receives data.
 - **Port:** A 16-bit number (0–65535) that identifies a specific program running on a machine. The IP address delivers the packet to the correct machine; the port determines which program on that machine it will be delivered to.
