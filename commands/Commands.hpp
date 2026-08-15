@@ -27,6 +27,7 @@ class Commands
         static void Invite(Client &client, const std::vector<std::string> &params, Server &server);
         static void Part(Client& client, const std::vector<std::string>& params, Server& server);
         static void Topic(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Mode(Client& client, const std::vector<std::string>& params, Server& server);
 };
 
 #endif

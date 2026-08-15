@@ -22,4 +22,6 @@ void Commands::run_command(Client& client, const std::string& command, const std
         Commands::Part(client, params, server);
     else if (command == "TOPIC")
         Commands::Topic(client, params, server);
+    else if (command == "MODE")
+        Commands::Mode(client, params, server);
 }

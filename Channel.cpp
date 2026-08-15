@@ -38,8 +38,9 @@ void Channel::set_password(std::string password)
 
 std::string Channel::get_password()
 {
-    return(password);
+    return(this->password);
 }
+
 
 void Channel::add_member(Client* client)
 {
@@ -49,6 +50,13 @@ void Channel::add_member(Client* client)
 void Channel::add_operator(int fd)
 {
     operators.push_back(fd);
+}
+
+void Channel::remove_operator(int fd)
+{
+    std::vector<int>::iterator it = std::find(operators.begin(), operators.end(), fd);
+    if (it != operators.end())
+        operators.erase(it);
 }
 
 void Channel::broadcast_message(std::string message, int fd)
@@ -135,6 +143,45 @@ void Channel::left_channel(int fd)
 std::map<int, Client*> Channel::get_members()
 {
     return (_members);
+}
+
+void Channel::set_invite(int status)
+{
+	this->invite_only = status;
+}
+
+void Channel::set_key(int status, std::string password)
+{
+	this->key = status;
+	if (status)
+		this->password = password;
+}
+
+void Channel::set_topic_rest(int status)
+{
+	this->topic_restrictions = status;
+}
+
+void Channel::set_member_limit(int limit)
+{
+	this->member_limit = limit;	
+}
+
+bool Channel::get_invite()
+{
+	return(this->invite_only);
+}
+bool Channel::get_topic_rest()
+{
+	return(this->topic_restrictions);
+}
+bool Channel::get_key()
+{
+	return (this->key);
+}
+int Channel::get_member_limit()
+{	
+	return(this->member_limit);
 }
 
 

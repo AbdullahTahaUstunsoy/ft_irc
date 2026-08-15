@@ -20,11 +20,27 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
     }
     target_channel = server.is_channel_exist(params[0]);
     if (target_channel)
+    {
+        if(target_channel->get_invite())
+        {
+            if(!target_channel->is_invited(client.get_fd()))
+                return ;
+            if(target_channel->get_key())
+            {
+                if (target_channel->get_password() != params[1])
+                    return ;
+            }
+            if (target_channel->get_member_limit() != -1)
+            {
+                if (target_channel->get_member_limit() <= target_channel->get_members().size())
+                    return ;
+            } 
+        }
         target_channel->add_member(&client);
+    }
     else
     {
         target_channel = server.create_channel(params[0], &client);
         client.send_message(params[0] + " created", client.get_fd());
-        
     }
 }
