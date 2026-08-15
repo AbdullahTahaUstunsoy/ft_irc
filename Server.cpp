@@ -268,3 +268,20 @@ Channel* Server::create_channel(std::string name, Client* client)
     new_channel->add_operator(client->get_fd());
     return (new_channel);
 }
+
+Channel* Server::get_channel(std::string name)
+{
+    Channel *channel = channels.at(name);
+    return (channel);
+}
+
+void Server::delete_channel(std::string channel_name)
+{
+    std::map<std::string, Channel*>::iterator it = channels.find(channel_name);
+
+    if (it != channels.end()) 
+    {
+        delete it->second; 
+        channels.erase(it);
+    }
+}

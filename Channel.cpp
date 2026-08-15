@@ -55,3 +55,37 @@ void Channel::broadcast_message(std::string& message, int fd)
 {
     
 }
+
+bool Channel::is_mem(int fd)
+{
+    if (_members.find(fd) != _members.end())
+        return (true);
+    return (false);
+}
+
+void Channel::left_channel(int fd, std::string message)
+{
+    //broadcast message
+    _members.erase(fd);
+}
+
+void Channel::left_channel(int fd)
+{
+    //broadcast message
+    _members.erase(fd);
+}
+
+std::map<int, Client*> Channel::get_members()
+{
+    return (_members);
+}
+
+bool Channel::is_op(int fd)
+{
+    for (int i = 0; i < operators.size(); i++)
+    {
+        if (operators[i] == fd)
+            return (true);
+    }
+    return (false);
+}

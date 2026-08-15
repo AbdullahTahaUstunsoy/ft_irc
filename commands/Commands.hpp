@@ -23,6 +23,8 @@ class Commands
         static void Privmsg(Client& client, const std::vector<std::string>& params, Server& server);
         static void Quit(Client& client, const std::vector<std::string>& params, Server& server);
         static void Join(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Part(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Topic(Client& client, const std::vector<std::string>& params, Server& server);
 };
 
 #endif
