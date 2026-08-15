@@ -6,6 +6,8 @@ SRCS = main.cpp Client.cpp Server.cpp ./commands/Nick.cpp \
 		./commands/Quit.cpp \
 		./commands/Kick.cpp \
 		./commands/Invite.cpp \
+		./commands/Part.cpp \
+		./commands/Topic.cpp \
 		Channel.cpp Parser.cpp \
 		./commands/RunCommands.cpp
 OBJS = $(SRCS:.cpp=.o)

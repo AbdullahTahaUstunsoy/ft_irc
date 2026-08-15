@@ -72,6 +72,8 @@ bool Channel::is_member(int fd)
     return(true);
 }
 
+
+
 bool Channel::is_operator(int fd)
 {
 	for (size_t i = 0; i < operators.size(); i++)
@@ -81,6 +83,7 @@ bool Channel::is_operator(int fd)
 	}
 	return false;
 }
+
 
 void Channel::remove_member(int fd)
 {
@@ -111,4 +114,27 @@ bool Channel::is_invited(int fd)
 	}
 	return false;
 }
+
+
+
+
+void Channel::left_channel(int fd, std::string message)
+{
+    //broadcast message
+	(void)message;
+    _members.erase(fd);
+}
+
+void Channel::left_channel(int fd)
+{
+    //broadcast message
+    _members.erase(fd);
+
+}
+
+std::map<int, Client*> Channel::get_members()
+{
+    return (_members);
+}
+
 

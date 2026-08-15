@@ -29,11 +29,14 @@ class Channel
         bool is_member(int fd);
         void add_operator(int fd);
         void broadcast_message(std::string message, int fd );
+        void left_channel(int fd);
+        void left_channel(int fd, std::string message);
+        std::map<int, Client*> get_members();
         std::string get_topic();
         bool is_operator(int fd);
         void remove_member(int fd);
         void add_invite(int fd);
-	    bool is_invited(int fd);
+	bool is_invited(int fd);
 };
 
 #endif

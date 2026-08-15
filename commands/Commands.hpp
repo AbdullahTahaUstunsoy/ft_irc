@@ -25,7 +25,8 @@ class Commands
         static void Join(Client& client, const std::vector<std::string>& params, Server& server);
         static void Kick(Client &client, const std::vector<std::string> &params, Server &server);
         static void Invite(Client &client, const std::vector<std::string> &params, Server &server);
-
+        static void Part(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Topic(Client& client, const std::vector<std::string>& params, Server& server);
 };
 
 #endif

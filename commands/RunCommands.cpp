@@ -18,4 +18,8 @@ void Commands::run_command(Client& client, const std::string& command, const std
         Commands::Join(client, params, server);
     else if (command == "INVITE")
         Commands::Invite(client, params, server);
+    else if (command == "PART")
+        Commands::Part(client, params, server);
+    else if (command == "TOPIC")
+        Commands::Topic(client, params, server);
 }
