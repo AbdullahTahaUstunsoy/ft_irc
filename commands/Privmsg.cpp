@@ -25,7 +25,12 @@ void Commands::Privmsg(Client& client, const std::vector<std::string>& params, S
         }
         else
         {
-            
+            Channel* channel = server.is_channel_exist(params[0]);
+            if(!channel)
+                return;
+            if(!channel->is_member(client.get_fd()))
+                return;
+            channel->broadcast_message(params[1],client.get_fd());
         }
 
     }

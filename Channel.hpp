@@ -16,6 +16,7 @@ class Channel
         int member_limit;
         std::map<int, Client*> _members;
         std::vector<int> operators;
+        std::vector<int> invited;
     public:
         Channel(std::string name);
         ~Channel();
@@ -25,9 +26,14 @@ class Channel
         void set_topic(std::string topic);
         void set_password(std::string topic);
         void add_member(Client* client);
+        bool is_member(int fd);
         void add_operator(int fd);
-        void broadcast_message(std::string& message, int fd );
+        void broadcast_message(std::string message, int fd );
         std::string get_topic();
+        bool is_operator(int fd);
+        void remove_member(int fd);
+        void add_invite(int fd);
+	    bool is_invited(int fd);
 };
 
 #endif

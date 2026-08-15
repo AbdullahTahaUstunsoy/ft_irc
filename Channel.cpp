@@ -51,7 +51,64 @@ void Channel::add_operator(int fd)
     operators.push_back(fd);
 }
 
-void Channel::broadcast_message(std::string& message, int fd)
+void Channel::broadcast_message(std::string message, int fd)
 {
-    
+    std::map<int, Client*>::iterator sit = _members.find(fd);
+    std::map<int, Client*>::iterator it;
+
+    for(it = _members.begin() ; it != _members.end(); it++)
+    {
+        sit->second->send_message(message, it->first);
+    }
+
 }
+
+bool Channel::is_member(int fd)
+{
+    std::map<int, Client*>::iterator it_mem = _members.find(fd);
+
+    if (it_mem == _members.end())
+        return (false);
+    return(true);
+}
+
+bool Channel::is_operator(int fd)
+{
+	for (size_t i = 0; i < operators.size(); i++)
+	{
+		if (operators[i] == fd)
+			return true;
+	}
+	return false;
+}
+
+void Channel::remove_member(int fd)
+{
+	_members.erase(fd);
+
+	for (size_t i = 0; i < operators.size(); i++)
+	{
+		if (operators[i] == fd)
+		{
+			operators.erase(operators.begin() + i);
+			break;
+		}
+	}
+}
+
+void Channel::add_invite(int fd)
+{
+	if (!is_invited(fd))
+		invited.push_back(fd);
+}
+
+bool Channel::is_invited(int fd)
+{
+	for (size_t i = 0; i < invited.size(); i++)
+	{
+		if (invited[i] == fd)
+			return true;
+	}
+	return false;
+}
+
