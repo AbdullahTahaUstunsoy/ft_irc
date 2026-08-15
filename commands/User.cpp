@@ -19,5 +19,9 @@ void Commands::User(Client& client, const std::vector<std::string>& params)
         client.set_register();
     }
     else
+    {
         client.send_message("pass nick is require", client.get_fd());
+        std::cout << client.get_pass() << std::endl;
+        std::cout << (client.get_nickname().empty()) << std::endl;
+    }
 }

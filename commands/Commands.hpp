@@ -26,7 +26,6 @@ class Commands
         static void Kick(Client &client, const std::vector<std::string> &params, Server &server);
         static void Invite(Client &client, const std::vector<std::string> &params, Server &server);
 
-
 };
 
 #endif

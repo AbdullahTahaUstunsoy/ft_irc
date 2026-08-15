@@ -16,4 +16,6 @@ void Commands::run_command(Client& client, const std::string& command, const std
         Commands::Quit(client, params, server);
     else if (command == "JOIN")
         Commands::Join(client, params, server);
+    else if (command == "INVITE")
+        Commands::Invite(client, params, server);
 }
