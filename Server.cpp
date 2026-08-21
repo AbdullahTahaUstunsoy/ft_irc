@@ -140,6 +140,8 @@ void Server::handleClients(int fd)
         removableFds.insert(fd);
         return;
     }
+    buf[n] = '\0';
+    std::cout << buf << std::endl;
     std::map<int, Client*>::iterator it = _clients.find(fd);
     if(it == _clients.end())
         return;
@@ -153,7 +155,13 @@ void Server::handleClients(int fd)
             continue;
         parser.get_message(line);
         parser.parse_message();
+        if (parser.get_command() == "CAP")
+        {
+            if (!parser.get_parameters().empty() && parser.get_parameters()[0] == "LS")
+                client->send_message("CAP * LS :\r\n", client->get_fd());
+        }
         Commands::run_command(*client, parser.get_command(), parser.get_parameters(), *this);
+        parser.clear_params();
     }
     if (client->get_buffer().size() > 512)//IRC mesaj sınırı. 512 byte'ı aşıp hâlâ tam satır olmayan veri, protokol ihlalidir — o bağlantıyı kesmek meşru. IRC'nin sınırı bir mesaj için: \r\n dahil en fazla 512 byte.
     {

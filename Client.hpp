@@ -30,6 +30,7 @@ class Client
 		void set_user_name(std::string user);
 		void set_real_name(std::string realname);
 		void send_message(std::string msg, int client_fd);
+		void clear_buffer();
 		~Client();
 };
 

@@ -5,6 +5,7 @@
 #include <map>
 #include "Client.hpp"
 #include <vector>
+#include <algorithm>
 
 class Channel
 {
@@ -29,7 +30,6 @@ class Channel
         bool get_invite();
         bool get_topic_rest();
         bool get_key();
-        int get_member_limit();
 
 
         void set_topic(std::string topic);

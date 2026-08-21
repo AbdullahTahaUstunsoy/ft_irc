@@ -32,7 +32,7 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
             }
             if (target_channel->get_member_limit() != -1)
             {
-                if (target_channel->get_member_limit() <= target_channel->get_members().size())
+                if (static_cast<size_t>(target_channel->get_member_limit()) <= target_channel->get_members().size())
                     return ;
             } 
         }

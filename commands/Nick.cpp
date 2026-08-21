@@ -27,10 +27,8 @@ void Commands::Nick(Client& client, const std::vector<std::string>& params, Serv
         client.send_message("pass false",client.get_fd());
         return ;
     }
-    if (isValidNickname(params[0]))
+    if (!isValidNickname(params[0]))
     {
-        // Hata mesajı ekle
-        std::cout << "burada " << std::endl;
         return ;
     }
     if (server.is_nick_unique(params[0]))

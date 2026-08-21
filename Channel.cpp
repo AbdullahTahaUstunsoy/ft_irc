@@ -61,14 +61,20 @@ void Channel::remove_operator(int fd)
 
 void Channel::broadcast_message(std::string message, int fd)
 {
-    std::map<int, Client*>::iterator sit = _members.find(fd);
-    std::map<int, Client*>::iterator it;
+    std::map<int, Client*>::iterator sender_it = _members.find(fd);
+    if (sender_it == _members.end())
+        return;
 
+    std::string formatted_message = ":" + sender_it->second->get_nickname() + " PRIVMSG " + this->get_name() + " :" + message + "\r\n";
+
+    std::map<int, Client*>::iterator it;
     for(it = _members.begin() ; it != _members.end(); it++)
     {
-        sit->second->send_message(message, it->first);
+        if (it->first != fd) 
+        {
+            it->second->send_message(formatted_message, it->first);
+        }
     }
-
 }
 
 bool Channel::is_member(int fd)
@@ -179,9 +185,6 @@ bool Channel::get_key()
 {
 	return (this->key);
 }
-int Channel::get_member_limit()
-{	
-	return(this->member_limit);
-}
+
 
 

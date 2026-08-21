@@ -20,6 +20,7 @@ class Parser
 		const std::string& get_command() const;
 		const std::vector<std::string>& get_parameters() const;
 		bool is_valid_command(const std::string &cmd) const;
+		void clear_params();
 		~Parser();
 };
 

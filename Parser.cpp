@@ -83,12 +83,12 @@ int Parser :: parse_message()
 
 bool Parser :: is_valid_command(const std::string &cmd) const
 {
-	static const std::string commands[13] = {
+	static const std::string commands[14] = {
 		"PASS", "NICK", "USER", "JOIN", "PRIVMSG",
 		"PART", "KICK", "INVITE", "TOPIC", "MODE",
-		"PING", "PONG", "QUIT"
+		"PING", "PONG", "QUIT", "CAP"
 	};
-	for (int i = 0; i < 13; i++)
+	for (int i = 0; i < 14; i++)
 	{
 		if (cmd == commands[i])
 			return (true);
@@ -104,6 +104,11 @@ const std::string &Parser :: get_command() const
 const std::vector<std::string>& Parser:: get_parameters() const
 {
 	return (this->parameters);
+}
+
+void Parser :: clear_params()
+{
+	this->parameters.clear();
 }
 
 Parser:: ~Parser()

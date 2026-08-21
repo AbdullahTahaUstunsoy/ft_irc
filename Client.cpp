@@ -32,6 +32,8 @@ void Client::set_register()
 
 void Client::send_message(std::string msg,int client_fd)
 {
+	if (msg.length() < 2 || msg.substr(msg.length() - 2) != "\r\n")
+        msg += "\r\n";
 	send(client_fd, msg.c_str(), msg.length(), 0);
 	return ;
 }
@@ -61,6 +63,11 @@ int Client ::  get_fd()
 void Client :: add_buffer(const char *data, size_t len)
 {
 	this->buffer.append(data, len);	
+}
+
+void Client::clear_buffer()
+{
+    this->buffer.clear();
 }
 
 bool Client :: line_end_check(std::string &line)

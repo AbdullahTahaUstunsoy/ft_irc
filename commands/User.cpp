@@ -24,4 +24,6 @@ void Commands::User(Client& client, const std::vector<std::string>& params)
         std::cout << client.get_pass() << std::endl;
         std::cout << (client.get_nickname().empty()) << std::endl;
     }
+    std::string welcome_msg = ":localhost 001 " + client.get_nickname() + " :Welcome to the Internet Relay Network " + client.get_nickname() + "\r\n";
+    client.send_message(welcome_msg, client.get_fd());
 }
