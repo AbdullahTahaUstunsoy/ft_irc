@@ -2,7 +2,10 @@
 
 Channel::Channel(std::string name) : name(name)
 {
-
+	this->invite_only = 0;
+	this->member_limit = -1;
+	this->topic_restrictions = 0;
+	this->key = 0;
 }
 
 Channel::~Channel()
