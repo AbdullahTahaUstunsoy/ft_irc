@@ -49,7 +49,7 @@ void Commands::Kick(Client &client, const std::vector<std::string> &params, Serv
 		return ;
 	}
 
-	std::string kickMsg = ":" + nick + " KICK " + chan->get_name() + " " + params[1];
+	std::string kickMsg = ":" + nick + " KICK " + chan->get_name() + " " + params[1] + + "\r\n";
 	chan->broadcast_message(kickMsg, -1);
 	chan->remove_member(target_fd);
 }

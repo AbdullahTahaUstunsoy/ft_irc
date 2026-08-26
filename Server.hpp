@@ -47,7 +47,7 @@ class Server {
         std::map<std::string, Channel*> channels;
     public:
         const std::string& get_server_name();
-        void quit_util(int fd, std::string message);
+        void quit_util(Client& client, std::string message);
         int get_client_fd(std::string nick);
         bool is_nick_unique(std::string nick);
         Channel* create_channel(std::string name, Client* client);

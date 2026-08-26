@@ -68,14 +68,14 @@ void Channel::broadcast_message(std::string message, int fd)
     if (sender_it == _members.end())
         return;
 
-    std::string formatted_message = ":" + sender_it->second->get_nickname() + " PRIVMSG " + this->get_name() + " :" + message + "\r\n";
+    // std::string formatted_message = ":" + sender_it->second->get_nickname() + " PRIVMSG " + this->get_name() + " :" + message + "\r\n";
 
     std::map<int, Client*>::iterator it;
     for(it = _members.begin() ; it != _members.end(); it++)
     {
         if (it->first != fd) 
         {
-            it->second->send_message(formatted_message, it->first);
+            it->second->send_message(message, it->first);
         }
     }
 }

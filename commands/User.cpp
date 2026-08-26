@@ -1,15 +1,18 @@
 #include "Commands.hpp"
 
-void Commands::User(Client& client, const std::vector<std::string>& params)
+void Commands::User(Client& client, const std::vector<std::string>& params, Server& server)
 {
+    std::string srv_name = server.get_server_name();
+    std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
+
     if (params.size() != 4)
     {
-        client.send_message("should be 4 parameter", client.get_fd());
+        client.send_message(":" + srv_name + " 461 " + nick + " USER :Not enough parameters", client.get_fd());
         return ;
     }
     if (client.is_register())
     {
-        client.send_message("user was already register", client.get_fd());
+        client.send_message(":" + srv_name + " 462 " + nick + " :Unauthorized command (already registered)", client.get_fd());
         return ;
     }
     client.set_user_name(params[0]);
@@ -20,10 +23,10 @@ void Commands::User(Client& client, const std::vector<std::string>& params)
     }
     else
     {
-        client.send_message("pass nick is require", client.get_fd());
+        client.send_message(":" + srv_name + " 451 " + nick + " :You have not registered (PASS or NICK missing)", client.get_fd());
         std::cout << client.get_pass() << std::endl;
         std::cout << (client.get_nickname().empty()) << std::endl;
+        return ;
     }
-    std::string welcome_msg = ":localhost 001 " + client.get_nickname() + " :Welcome to the Internet Relay Network " + client.get_nickname() + "\r\n";
-    client.send_message(welcome_msg, client.get_fd());
+    client.send_message(":" + srv_name + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick, client.get_fd());
 }

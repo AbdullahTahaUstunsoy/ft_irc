@@ -249,11 +249,33 @@ int Server::get_client_fd(std::string nick)
     return (-1);
 }
 
-void Server::quit_util(int fd, std::string message)
+void Server::quit_util(Client& client, std::string message)
 {
-    (void)fd;
-    (void)message;
-    //removeClient
+    std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
+    std::string quit_msg = ":" + nick + " QUIT :Quit: " + message;
+    std::map<std::string, Channel*>::iterator it;
+
+    for (it = channels.begin(); it != channels.end(); )
+    {
+        if (!it->second->is_member(client.get_fd()))
+        {
+            it++;
+            continue ;
+        }
+        it->second->broadcast_message(quit_msg, client.get_fd());
+        it->second->remove_member(client.get_fd());
+        if (it->second->get_members().empty())
+        {
+            std::string name = it->first;
+            it++;
+            delete_channel(name);
+        }
+        else
+            it++;
+    }
+    close(client.get_fd());
+    //remove from pool array
+    removeClient(client.get_fd());
 }
 
 Channel* Server::is_channel_exist(std::string channel_name)
