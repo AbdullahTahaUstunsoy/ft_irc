@@ -3,7 +3,7 @@
 
 volatile sig_atomic_t g_running = 1;
 
-Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum(port) , _password(password)
+Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum(port) , _password(password), _serverName("test_server")
 {
 }
 
@@ -281,6 +281,11 @@ Channel* Server::get_channel(std::string name)
 {
     Channel *channel = channels.at(name);
     return (channel);
+}
+
+const std::string& Server::get_server_name()
+{
+    return (this->_serverName);
 }
 
 void Server::delete_channel(std::string channel_name)

@@ -23,6 +23,7 @@ class Server {
     private:
         int _serverFd;
         int _portNum;
+        std::string _serverName;
         std::string _password;
         std::vector<struct pollfd> _pollFds;
         void addToPoll(int fd);
@@ -45,6 +46,7 @@ class Server {
 
         std::map<std::string, Channel*> channels;
     public:
+        const std::string& get_server_name();
         void quit_util(int fd, std::string message);
         int get_client_fd(std::string nick);
         bool is_nick_unique(std::string nick);

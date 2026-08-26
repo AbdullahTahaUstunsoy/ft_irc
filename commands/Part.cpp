@@ -2,9 +2,12 @@
 
 void Commands::Part(Client& client, const std::vector<std::string>& params, Server& server)
 {
+    std::string srv_name = server.get_server_name();
+    std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
+
     if (params.empty())
     {
-        client.send_message("empty parameter", client.get_fd());
+        client.send_message(":" + srv_name + " 461 " + nick + " PART :Not enough parameters", client.get_fd());
         return ;
     }
     if (server.is_channel_exist(params[0]))
@@ -20,9 +23,9 @@ void Commands::Part(Client& client, const std::vector<std::string>& params, Serv
                 server.delete_channel(params[0]);
             return ;
         }
-        client.send_message("you are not a member", client.get_fd());
+        client.send_message(":" + srv_name + " 442 " + nick + " " + params[0] + " :You're not on that channel", client.get_fd());
         return ;
     }
-    client.send_message("no channel with this name", client.get_fd());
+    client.send_message(":" + srv_name + " 403 " + nick + " " + params[0] + " :No such channel", client.get_fd());
     return ;
 }

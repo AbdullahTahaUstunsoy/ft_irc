@@ -10,7 +10,7 @@ void Commands::run_command(Client& client, const std::string& command, const std
     else if (command == "USER")
         Commands::User(client, params);
     else if (command == "PING")
-        Commands::Ping(client, params);
+        Commands::Ping(client, params, server);
     else if (command == "PRIVMSG")
         Commands::Privmsg(client, params, server);
     else if (command == "QUIT")
