@@ -8,7 +8,7 @@ void Commands::run_command(Client& client, const std::string& command, const std
     else if (command == "NICK")
         Commands::Nick(client, params, server);
     else if (command == "USER")
-        Commands::User(client, params);
+        Commands::User(client, params, server);
     else if (command == "PING")
         Commands::Ping(client, params, server);
     else if (command == "PRIVMSG")
