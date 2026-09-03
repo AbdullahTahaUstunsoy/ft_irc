@@ -25,6 +25,16 @@ std::string Client::get_nickname()
 	return (nickname);
 }
 
+std::string Client :: get_username()
+{
+	return (this->username);
+}
+
+std::string Client :: get_realname()
+{
+	return (this->realname);
+}
+
 void Client::set_register()
 {
 	registered = true;

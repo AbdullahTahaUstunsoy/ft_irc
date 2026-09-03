@@ -22,6 +22,8 @@ class Client
 		bool line_end_check(std::string &line);
 		std::string get_buffer();
 		std::string get_nickname();
+		std::string get_username();
+		std::string get_realname();
 		bool get_pass();
 		bool is_register();
 		void set_pass();

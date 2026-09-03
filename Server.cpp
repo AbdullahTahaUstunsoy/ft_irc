@@ -3,7 +3,7 @@
 
 volatile sig_atomic_t g_running = 1;
 
-Server::Server(int port, const std::string& password) : _serverFd(-1) , _portNum(port) , _password(password), _serverName("test_server")
+Server::Server(int port, const std::string& password) : _serverFd(-1), _portNum(port), _serverName("test_server"), _password(password) 
 {
 }
 
