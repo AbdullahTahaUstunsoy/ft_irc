@@ -4,6 +4,7 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
 {
     std::string srv_name = server.get_server_name();
     std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
+    std::string prefix = ":" + nick + "!" + client.get_username() + "@127.0.0.1";
     Channel* target_channel;
     if (params.empty())
     {
@@ -55,14 +56,15 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
                 }
             } 
         }
-        std::cout << "Burada 9" << std::endl;
         target_channel->add_member(&client);
-        client.send_message(":" + nick + " JOIN :" + params[0], client.get_fd());
+        std::string join_msg = prefix + " JOIN :" + params[0];
+        client.send_message(join_msg, client.get_fd());
+        target_channel->broadcast_message(join_msg, client.get_fd());
     }
     else
     {
-        std::cout << "Burada 10" << std::endl;
-        target_channel = server.create_channel(params[0], &client);
-        client.send_message(":" + nick + " JOIN :" + params[0], client.get_fd());
+    target_channel = server.create_channel(params[0], &client);
+    std::string join_msg = prefix + " JOIN :" + params[0];
+    client.send_message(join_msg, client.get_fd());
     }
 }

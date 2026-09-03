@@ -14,7 +14,6 @@ void Commands::Part(Client& client, const std::vector<std::string>& params, Serv
     {
         Channel *target_channel = server.get_channel(params[0]);
         std::cout << "PART a gelen channel adi" + params[0] << std::endl;
-        // Sanırım # dan dolayı channel adını doğru bulamıyor ve channeldan ayrılamıyor
         if (target_channel->is_member(client.get_fd()))
         {
             if (params.size() == 2)

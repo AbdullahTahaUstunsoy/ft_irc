@@ -31,6 +31,20 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
     Channel* target_channel = server.is_channel_exist(params[0]);
     if(!target_channel)
     {
+        if (params[0] == nick)
+        {
+            if(params[1] == "+i" || params[1] == "-i")
+            {
+                client.send_message(":" + nick + " MODE " + nick + " :" + params[1], client.get_fd());
+                return ;
+            }
+            else
+            {
+                client.send_message(":" + srv_name + " 403 " + nick + " " + params[0] + " :Wrong parameters", client.get_fd());
+                return ;
+            }
+
+        }
         client.send_message(":" + srv_name + " 403 " + nick + " " + params[0] + " :No such channel", client.get_fd());
         return ;
     }
