@@ -63,8 +63,8 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
     }
     else
     {
-    target_channel = server.create_channel(params[0], &client);
-    std::string join_msg = prefix + " JOIN :" + params[0];
-    client.send_message(join_msg, client.get_fd());
+        target_channel = server.create_channel(params[0], &client);
+        std::string join_msg = prefix + " JOIN :" + params[0];
+        client.send_message(join_msg, client.get_fd());
     }
 }

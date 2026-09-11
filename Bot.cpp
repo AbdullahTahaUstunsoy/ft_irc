@@ -14,8 +14,17 @@ int main(int argc, char **argv)
 
     connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
 
-    const char* msg = "test";
-    send(client_socket, msg, strlen(msg), 0);
+    send(client_socket, "PASS 1234\r\n", 13, 0);
+    send(client_socket, "PASS 1234\r\n", 11, 0);
+    send(client_socket, "NICK bot\r\n", 10, 0);
+    send(client_socket, "USER bot 0 * :Bot\r\n", 19, 0);
+    send(client_socket, "JOIN #test\r\n", 12, 0);
+    /*
+    while()
+    {
+        to do ;
+    } 
+    */
 
     close(client_socket);
     return (0);
