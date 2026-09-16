@@ -50,7 +50,7 @@ void check_msg(std::vector<std::string> msg, int client_socket)
     channel_name = msg.at(2);
     nick.append(msg.at(0), 1, msg.at(0).size() - 1);
     pos = message.find("!rps");
-    int i = -1;
+    size_t i = -1;
     while (isspace(message[++i]))
         ;
     if (i != pos)
