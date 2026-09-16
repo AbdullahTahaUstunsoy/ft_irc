@@ -2,14 +2,12 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 int result(std::string& choice)
 {
-    srand(time(NULL));
     int num = rand(); 
 
-    // 0 rock 1 paper 2 scissors
-    // 0 draw 1 won 2 lost
     if (choice == "rock")
     {
         if (num % 3 == 0)
@@ -45,7 +43,6 @@ void check_msg(std::vector<std::string> msg, int client_socket)
     std::string nick;
     std::string send_msg;
     size_t pos;
-    std::string choice;
     std::string channel_name;
     int val;
     
@@ -62,23 +59,22 @@ void check_msg(std::vector<std::string> msg, int client_socket)
         send(client_socket, send_msg.c_str(), send_msg.size(),0);
         return ;
     }
-    i += 4;
-    while (isspace(message[++i]))
-        ;
-    message.erase(0, i);
-    if (message != "rock" && message != "scissors" && message != "paper")
+    std::string arg = message.substr(pos + 4);
+    size_t start = arg.find_first_not_of(" \t");
+    if (start != std::string::npos)
+        arg.erase(0, start);
+    else
+        arg = "";
+    size_t end = arg.find_last_not_of(" \t\r\n");
+    if (end != std::string::npos)
+        arg.erase(end + 1);
+    if (arg != "rock" && arg != "scissors" && arg != "paper")
     {
         send_msg = "PRIVMSG " + channel_name + " :Hi " + nick + " the usage of bot <!rps your_choice(rock,paper,scissors)> example:!rps rock\r\n";
         send(client_socket, send_msg.c_str(), send_msg.size(),0);
         return ;
     }
-    if (message.compare("rock") == 0)
-        choice = "rock";
-    else if (message.compare("paper") == 0)
-        choice = "paper";
-    else
-        choice = "scissors";
-    val = result(choice);
+    val = result(arg);
     if (val == 0)
     {
         send_msg = "PRIVMSG " + channel_name + " :" + nick + " you drew the match\r\n";
@@ -127,20 +123,21 @@ std::vector<std::string> split_msg(std::string& message)
 
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
     sockaddr_in server_address;
     std::string buffer;
     int client_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (argc != 2)
     {
-        std::cout << "invalid usage the usage is <./a.out channel_name>" << std::endl;
+        std::cout << "invalid usage the usage is <./bot channel_name>" << std::endl;
         return (1);
     }
     std::string channel_name = argv[1];
     channel_name = '#' + channel_name;    
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(6667);
-    server_address.sin_addr.s_addr = INADDR_ANY;
+    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
     connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address));
     send(client_socket, "PASS 1234\r\n", 11, 0);
     send(client_socket, "NICK bot\r\n", 10, 0);
@@ -155,7 +152,7 @@ int main(int argc, char **argv)
         {
             buffer.append(temp_buf, len);
             size_t pos = buffer.find("\r\n");
-            if (pos != std::string::npos)
+            while ((pos = buffer.find("\r\n")) != std::string::npos)
             {
                 std::string message = buffer.substr(0, pos);
                 buffer.erase(0, pos + 2);
