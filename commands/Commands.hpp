@@ -13,7 +13,7 @@ class Server;
 class Commands
 {
     private:
-        // static std::string password;
+
     public: 
         static void run_command(Client& client, const std::string& command, const std::vector<std::string>& params, Server& server);
         static void Pass(Client& client, const std::vector<std::string>& params, Server& server);
@@ -28,6 +28,9 @@ class Commands
         static void Part(Client& client, const std::vector<std::string>& params, Server& server);
         static void Topic(Client& client, const std::vector<std::string>& params, Server& server);
         static void Mode(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Notice(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Cap(Client& client, const std::vector<std::string>& params, Server& server);
+        static void Names(Client& client, const std::vector<std::string>& params, Server& server);
 };
 
 #endif

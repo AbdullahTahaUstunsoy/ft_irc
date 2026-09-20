@@ -57,6 +57,7 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
             } 
         }
         target_channel->add_member(&client);
+        Commands::Names(client, params, server);
         std::string join_msg = prefix + " JOIN :" + params[0];
         client.send_message(join_msg, client.get_fd());
         target_channel->broadcast_message(join_msg, client.get_fd());
