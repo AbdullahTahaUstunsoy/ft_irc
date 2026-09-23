@@ -69,4 +69,78 @@ This project is about creating an IRC server by implementing IRC (Internet Relay
 
 ### Instructions
 
+First, compile the project using the make command, which generates the executable file (ircserv). To run the program, use the following command:
+
+./ircserv <port_number> <password>
+
+Here, you need to specify <port_number> and <password>. According to the IRC RFC specification, the default standard port is 6667, but you can choose any valid available port.
+
+---
+
+### Usage Examples
+
+For testing purposes, you can create a client directly from your terminal using Netcat (nc):
+
+* Locally:
+nc -C localhost <port_number>
+
+* From another computer on the same local network:
+nc -C <server_local_ip> <port_number>
+
+Once connected, the client must use the password set at server launch to authenticate and register with the IRC server.
+
+If you want to use with irssi:
+
+Use irssi command to enter irssi then use /connect <ip_address> <port_number> <password> command to connect to server.
+
+#### Basic Client Commands
+* **PASS** `<password>`
+* **NICK** `<nickname>`
+* **USER** `<username>` 0 * :`<realname>`
+* **JOIN** `<channel_name>` `<key (if necessary)>`
+* **PRIVMSG** `<target>` :`<message>`
+* **PART** `<channel_name>` :`<reason (if necessary)>`
+* **KICK** `<channel_name>` `<nickname>` :`<reason (if necessary)>`
+* **INVITE** `<nickname>` `<channel_name>`
+* **TOPIC** `<channel_name>` :`<new_topic (if necessary)>`
+* **MODE** `<channel_name>` `<flag>` `<extra parameter (if necessary)>`
+* **PING** `<server_or_token>`
+* **QUIT** :`<quit_message (if necessary)>`
+* **CAP** `<LS/END/REQ>`
+* **NOTICE** `<target>` :`<message>`
+* **NAMES** `<channel_name (if necessary)>`
+---
+
+### Example Usage Scenario
+
+(In this scenario, both the server and the client are running on the same machine.)
+
+1. Start the server:
+make
+./ircserv 6667 test-password
+
+2. Establish a TCP connection from the client:
+nc -C localhost 6667
+
+3. Authenticate and register the client:
+PASS test-password
+NICK guest
+USER guest 0 * :John Doe
+
+Note: If you want to connect to the server from another machine on the same network, replace localhost with the server machine's local IP address.
+To find the server's local IP, run: hostname -I
+(This may output multiple IP addresses corresponding to different network interfaces, such as physical Wi-Fi/Ethernet, virtual machine networks, or Docker bridge. Make sure to choose the actual local LAN IP.)
+
+---
+
 ### Resources
+* Modern IRC Client Protocol Documentation: https://modern.ircdocs.horse/
+* Beej's Guide to Network Programming - poll(): https://beej.us/guide/bgnet/html/#pollman
+* RFC 1459 (Internet Relay Chat Protocol): https://www.rfc-editor.org/info/rfc1459/#section-1.1
+* RFC 2812 (Internet Relay Chat: Client Protocol): https://datatracker.ietf.org/doc/html/rfc2812
+
+---
+
+### How We Used AI
+* Brainstorming additional edge-case testing scenarios alongside our own tests.
+* Recommending supplementary documentation and technical resources beyond our initial references.
