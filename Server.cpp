@@ -9,12 +9,19 @@ Server::Server(int port, const std::string& password) : _serverFd(-1), _portNum(
 
 Server::~Server()
 {
+    for (std::map<std::string, Channel*>::iterator it = channels.begin(); it != channels.end(); ++it)
+    {
+        delete it->second;
+    }
+    channels.clear();
+
     for(std::map<int, Client*>::iterator it = _clients.begin(); it != _clients.end(); it++)
     {
         close(it->first);
         delete (it->second);
     }
     _clients.clear();
+    
     if (_serverFd >= 0)
         close(_serverFd);
 }
