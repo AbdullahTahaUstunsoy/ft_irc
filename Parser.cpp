@@ -83,10 +83,10 @@ int Parser :: parse_message()
 
 bool Parser :: is_valid_command(const std::string &cmd) const
 {
-	static const std::string commands[14] = {
+	static const std::string commands[15] = {
 		"PASS", "NICK", "USER", "JOIN", "PRIVMSG",
 		"PART", "KICK", "INVITE", "TOPIC", "MODE",
-		"PING", "PONG", "QUIT", "CAP"
+		"PING", "QUIT", "CAP", "Notice", "NAMES" 
 	};
 	for (int i = 0; i < 14; i++)
 	{

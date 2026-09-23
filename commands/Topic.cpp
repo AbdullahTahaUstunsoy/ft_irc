@@ -21,9 +21,11 @@ void Commands::Topic(Client& client, const std::vector<std::string>& params, Ser
             {
                 if (target_channel->get_topic().empty())
                 {
+                    std::cout << "salkdklfasfkla" << std::endl;
                     client.send_message(":" + srv_name + " 331 " + nick + " " + params[0] + " :No topic is set", client.get_fd());
                     return ;
                 }
+                std::cout << "--------" << std::endl;
                 client.send_message(":" + srv_name + " 332 " + nick + " " + params[0] + " :" + target_channel->get_topic(), client.get_fd());
                 return ;
             }
@@ -35,9 +37,11 @@ void Commands::Topic(Client& client, const std::vector<std::string>& params, Ser
                     return ;
                 }
                 target_channel->set_topic(params[1]);
-                target_channel->broadcast_message(":" + nick + " TOPIC " + params[0] + " :" + params[1] + "\r\n", -1);
+                target_channel->broadcast_message(":" + nick + " TOPIC " + params[0] + " :" + params[1] + "\r\n", client.get_fd());
                 return ;
             }
+            else
+                target_channel->broadcast_message(":" + nick + " TOPIC " + target_channel->get_name() + " :" + target_channel->get_topic() + "\r\n", client.get_fd());
         }
         client.send_message(":" + srv_name + " 442 " + nick + " " + params[0] + " :You're not on that channel", client.get_fd());
         return ;

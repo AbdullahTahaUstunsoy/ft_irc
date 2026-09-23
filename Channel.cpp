@@ -30,6 +30,7 @@ std::string Channel::get_topic()
 
 void Channel::set_topic(std::string topic)
 {
+    std::cout << "burada3333" << std::endl;
     this->topic = topic;
 }
 
@@ -62,21 +63,15 @@ void Channel::remove_operator(int fd)
         operators.erase(it);
 }
 
-void Channel::broadcast_message(std::string message, int fd)
+void Channel::broadcast_message(std::string message, int fd) // mesajı tekrar yazması düzeltilecek
 {
     std::map<int, Client*>::iterator sender_it = _members.find(fd);
     if (sender_it == _members.end())
-        return;
-
-    // std::string formatted_message = ":" + sender_it->second->get_nickname() + " PRIVMSG " + this->get_name() + " :" + message + "\r\n";
-
+        return ;
     std::map<int, Client*>::iterator it;
     for(it = _members.begin() ; it != _members.end(); it++)
     {
-        if (it->first != fd) 
-        {
-            it->second->send_message(message, it->first);
-        }
+        it->second->send_message(message, it->first);
     }
 }
 

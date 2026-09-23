@@ -24,7 +24,7 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
 
     if(params.size() < 2)
     {
-        // we have to check what does /mode #channel
+        // we have to check what does /mode #channel 
         client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters", client.get_fd());
         return ;
     }
@@ -65,7 +65,7 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
         if (params[1][0] == '+')
             target_channel->set_key(1, params[2]);    
         else
-            target_channel->set_key(0, NULL);
+            target_channel->set_key(0, "");
     }
     else if(params[1] == "+t" || params[1] == "-t")
     {

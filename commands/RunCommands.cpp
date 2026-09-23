@@ -28,10 +28,13 @@ void Commands::run_command(Client& client, const std::string& command, const std
         Commands::Topic(client, params, server);
     else if (command == "MODE")
         Commands::Mode(client, params, server);
-    else if (command == "Notice")
+    else if (command == "NOTICE")
         Commands::Notice(client, params, server);
-    else if (command == "Cap")
+    else if (command == "CAP")
         Commands::Cap(client, params, server);
-    else if (command == "Names")
+    else if (command == "NAMES")
         Commands::Names(client, params, server);
+    else if (command == "KICK")
+        Commands::Kick(client, params, server);
+    
 }

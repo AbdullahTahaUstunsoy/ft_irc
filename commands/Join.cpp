@@ -35,32 +35,42 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
                 std::cout << "Burada 4" << std::endl;
                 return ;
             }
-            if(target_channel->get_key())
-            {
-                std::cout << "Burada 5" << std::endl;
-                if (target_channel->get_password() != params[1]) // potential segfault if the user wants to join a channel that have a password
-                {
-                    std::cout << "Burada 6" << std::endl;
-                    client.send_message(":" + srv_name + " 475 " + nick + " " + params[0] + " :Cannot join channel (+k)", client.get_fd());
-                    return ;
-                }
-            }
-            if (target_channel->get_member_limit() != -1)
-            {
-                std::cout << "Burada 7" << std::endl;
-                if (static_cast<size_t>(target_channel->get_member_limit()) <= target_channel->get_members().size())
-                {
-                    std::cout << "Burada 8" << std::endl;
-                    client.send_message(":" + srv_name + " 471 " + nick + " " + params[0] + " :Cannot join channel (+l)", client.get_fd());
-                    return ;
-                }
-            } 
         }
+        if(target_channel->get_key())
+        {
+            std::cout << "Burada 5" << std::endl;
+            if (params.size() < 2 || target_channel->get_password() != params[1])
+            {
+                std::cout << "Burada 6" << std::endl;
+                client.send_message(":" + srv_name + " 475 " + nick + " " + params[0] + " :Cannot join channel", client.get_fd());
+                return ;
+            }
+        }
+        if (target_channel->get_member_limit() != -1)
+        {
+            std::cout << "Burada 7" << std::endl;
+            if (static_cast<size_t>(target_channel->get_member_limit()) <= target_channel->get_members().size())
+            {
+                std::cout << "Burada 8" << std::endl;
+                client.send_message(":" + srv_name + " 471 " + nick + " " + params[0] + " :Cannot join channel (+l)", client.get_fd());
+                return ;
+            }
+        } 
         target_channel->add_member(&client);
         Commands::Names(client, params, server);
         std::string join_msg = prefix + " JOIN :" + params[0];
         client.send_message(join_msg, client.get_fd());
         target_channel->broadcast_message(join_msg, client.get_fd());
+        if (target_channel->get_topic().empty())
+        {
+            client.send_message(":" + srv_name + " 331 " + nick + " " + params[0] + " :No topic is set", client.get_fd());
+            return ;
+        }
+        else
+        {
+            client.send_message(":" + srv_name + " 332 " + nick + " " + params[0] + " :" + target_channel->get_topic(), client.get_fd());
+            return ;
+        }
     }
     else
     {

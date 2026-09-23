@@ -16,7 +16,7 @@ SRCS = main.cpp Client.cpp Server.cpp ./commands/Nick.cpp \
 		./commands/RunCommands.cpp
 OBJS = $(SRCS:.cpp=.o)
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -g -std=c++98
 all: $(NAME)
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
