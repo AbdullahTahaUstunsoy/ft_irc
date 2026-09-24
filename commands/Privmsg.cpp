@@ -39,7 +39,7 @@ void Commands::Privmsg(Client& client, const std::vector<std::string>& params, S
                 client.send_message(":" + srv_name + " 404 " + nick + " " + params[0] + " :Cannot send to channel", client.get_fd());
                 return;
             }
-            channel->broadcast_message(":" + nick + " PRIVMSG " + params[0] + " :" + params[1] + + "\r\n", client.get_fd());
+            channel->broadcast_message(":" + nick + " PRIVMSG " + params[0] + " :" + params[1] + + "\r\n", client.get_fd(), 1);
         }
     }
 }

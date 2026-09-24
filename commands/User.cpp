@@ -24,8 +24,6 @@ void Commands::User(Client& client, const std::vector<std::string>& params, Serv
     else
     {
         client.send_message(":" + srv_name + " 451 " + nick + " :You have not registered (PASS or NICK missing)", client.get_fd());
-        std::cout << client.get_pass() << std::endl;
-        std::cout << (client.get_nickname().empty()) << std::endl;
         return ;
     }
     client.send_message(":" + srv_name + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick, client.get_fd());

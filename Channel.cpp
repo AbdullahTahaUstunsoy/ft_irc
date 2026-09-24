@@ -30,7 +30,6 @@ std::string Channel::get_topic()
 
 void Channel::set_topic(std::string topic)
 {
-    std::cout << "burada3333" << std::endl;
     this->topic = topic;
 }
 
@@ -63,7 +62,7 @@ void Channel::remove_operator(int fd)
         operators.erase(it);
 }
 
-void Channel::broadcast_message(std::string message, int fd) // mesajı tekrar yazması düzeltilecek
+void Channel::broadcast_message(std::string message, int fd, bool status) 
 {
     std::map<int, Client*>::iterator sender_it = _members.find(fd);
     if (sender_it == _members.end())
@@ -71,6 +70,8 @@ void Channel::broadcast_message(std::string message, int fd) // mesajı tekrar y
     std::map<int, Client*>::iterator it;
     for(it = _members.begin() ; it != _members.end(); it++)
     {
+        if (status && it->first == fd)
+            continue;
         it->second->send_message(message, it->first);
     }
 }
@@ -137,9 +138,6 @@ void Channel::left_channel(int fd, std::string message)
 				+ " :"
                 + message;
 
-    // Channel'daki herkese gönder
-
-	std::cout << msg << std::endl;
     for (std::map<int, Client*>::iterator it = _members.begin();
          it != _members.end();
          ++it)
@@ -148,6 +146,28 @@ void Channel::left_channel(int fd, std::string message)
     }
 
     _members.erase(fd);
+}
+std::string Channel::get_modes()
+{
+    std::string flags = "";
+    std::string args = "";
+
+    if (this->invite_only)
+        flags += "i";
+    if (this->topic_restrictions)
+        flags += "t";
+    if (this->key)
+        flags += "k";
+    if (this->member_limit != -1)
+    {
+        flags += "l";
+        std::stringstream ss;
+        ss << this->member_limit;
+        args += " " + ss.str();
+    }
+    if (flags.empty())
+        return "";
+    return "+" + flags + args;
 }
 
 void Channel::left_channel(int fd)
@@ -160,7 +180,6 @@ void Channel::left_channel(int fd)
                 + "!" + it_mem->second->get_username()
                 + "@127.0.0.1 PART " + this->name;
 
-    std::cout << msg << std::endl;
 
     for (std::map<int, Client*>::iterator it = _members.begin();
          it != _members.end();

@@ -26,12 +26,12 @@ Server::~Server()
         close(_serverFd);
 }
 
-const std::string& Server::getPassword() const //parser'a lazım olacak
+const std::string& Server::getPassword() const 
 {
     return _password;
 }
 
-Client* Server::getClient(int fd) //parser'a lazım olacak
+Client* Server::getClient(int fd)
 {
 	std::map<int, Client*>::iterator it = _clients.find(fd);
     if(it != _clients.end())
@@ -115,7 +115,7 @@ void Server::removeFds()
     removableFds.clear();
 }
 
-void Server::acceptClients() //burası döngüye alınabilir
+void Server::acceptClients() 
 {
     int clientFd = accept(_serverFd, NULL, NULL);
     if (clientFd < 0)
@@ -148,10 +148,9 @@ void Server::handleClients(int fd)
         return;
     }
     buf[n] = '\0';
-    std::cout << buf << std::endl;
     std::map<int, Client*>::iterator it = _clients.find(fd);
     if(it == _clients.end())
-        return;
+        return; 
     Client* client = it->second;
     client->add_buffer(buf,n);
     std::string line;
@@ -168,12 +167,10 @@ void Server::handleClients(int fd)
                 client->send_message("CAP * LS :\r\n", client->get_fd());
         }
         Commands::run_command(*client, parser.get_command(), parser.get_parameters(), *this);
+        std::map<int, Client*>::iterator it2 = _clients.find(fd);  
+        if(it2 == _clients.end())
+            break;
         parser.clear_params();
-    }
-    if (client->get_buffer().size() > 512)//IRC mesaj sınırı. 512 byte'ı aşıp hâlâ tam satır olmayan veri, protokol ihlalidir — o bağlantıyı kesmek meşru. IRC'nin sınırı bir mesaj için: \r\n dahil en fazla 512 byte.
-    {
-        removableFds.insert(fd);
-        return;
     }
 }
 
@@ -203,7 +200,7 @@ void Server::handlePollEvents()
     }
 }
 
-void Server::runServer() //Reactor Pattern
+void Server::runServer()
 {
     signal(SIGINT, handleSigint);
     signal(SIGPIPE, SIG_IGN);
@@ -220,16 +217,19 @@ void Server::runServer() //Reactor Pattern
     }
 }
 
-void Server::sendToClient(int fd, const std::string& msg) //errno'ya bakmayacağız subjectte errno'ya göre hareket etmeyin yazıyor.
+
+
+void Server::broadcast_to_client_channels(int client_fd, const std::string& message)
 {
-    std::string message = msg + "\r\n";
-    ssize_t rval = send(fd, message.c_str(), message.size(), 0);
-    if (rval < 0)
-        removableFds.insert(fd);
-    
+    std::map<std::string, Channel*>::iterator it;
+    for (it = channels.begin(); it != channels.end(); ++it)
+    {
+        Channel* chan = it->second;
+        if (chan && chan->is_member(client_fd))
+            chan->broadcast_message(message, client_fd, 1);
+    }
 }
 
-// for commands function
 
 bool Server::is_nick_unique(std::string nick)
 {
@@ -269,7 +269,7 @@ void Server::quit_util(Client& client, std::string message)
             it++;
             continue ;
         }
-        it->second->broadcast_message(quit_msg, client.get_fd());
+        it->second->broadcast_message(quit_msg, client.get_fd(), 0);
         it->second->remove_member(client.get_fd());
         if (it->second->get_members().empty())
         {
@@ -281,7 +281,7 @@ void Server::quit_util(Client& client, std::string message)
             it++;
     }
     close(client.get_fd());
-    //remove from pool array
+    removeFromPoll(client.get_fd());
     removeClient(client.get_fd());
 }
 

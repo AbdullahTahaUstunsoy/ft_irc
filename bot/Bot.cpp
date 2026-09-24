@@ -3,6 +3,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <cstdlib>
+#include <vector> 
+#include <ctime>   
+#include <cctype>  
 
 int result(std::string& choice)
 {
@@ -108,13 +112,11 @@ std::vector<std::string> split_msg(std::string& message)
         {
             part.append(message ,1 ,message.size() - 1);
             message.erase(0, message.size() - 1);
-            std::cout << "-----" << part << "-----" << std::endl;
             splited_msg.push_back(part);
             break ;
         }
         pos = message.find(' ');
         part.append(message, 0, pos);
-        std::cout << "-----" << part << "-----" << std::endl;
         message.erase(0, pos + 1);
         splited_msg.push_back(part);
     }
@@ -130,7 +132,6 @@ int main(int argc, char **argv)
 
     if (argc != 2)
     {
-        std::cout << "invalid usage the usage is <./bot channel_name>" << std::endl;
         return (1);
     }
     std::string channel_name = argv[1];

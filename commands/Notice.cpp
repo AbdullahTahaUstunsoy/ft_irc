@@ -24,7 +24,7 @@ void Commands::Notice(Client& client, const std::vector<std::string>& params, Se
                 return;
             if(!channel->is_member(client.get_fd()))
                 return;
-            channel->broadcast_message(":" + nick + " NOTICE " + params[0] + " :" + params[1] + + "\r\n", client.get_fd());
+            channel->broadcast_message(":" + nick + " NOTICE " + params[0] + " :" + params[1] + + "\r\n", client.get_fd(), 0);
         }
     }
 }

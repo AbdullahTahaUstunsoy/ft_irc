@@ -42,7 +42,7 @@ void Commands::Nick(Client& client, const std::vector<std::string>& params, Serv
         {
             std::string nick_msg = ":" + old_nick + " NICK :" + params[0];
             client.send_message(nick_msg, client.get_fd());
-            // in this case have to use broadcast messages for users on channels 
+            server.broadcast_to_client_channels(client.get_fd(), nick_msg);
         }
         client.set_nick_name(params[0]);
         return ;

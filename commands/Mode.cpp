@@ -22,12 +22,23 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
     std::string srv_name = server.get_server_name();
     std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
 
-    if(params.size() < 2)
+    if (params.size() == 1)
     {
-        // we have to check what does /mode #channel 
-        client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters", client.get_fd());
-        return ;
+        Channel* target_channel = server.is_channel_exist(params[0]);
+        if (!target_channel)
+        {
+            client.send_message(":" + srv_name + " 403 " + nick + " " + params[0] + " :No such channel", client.get_fd());
+            return;
+        }
+        std::string current_modes = target_channel->get_modes();
+        if (current_modes.empty())
+            client.send_message(":" + srv_name + " 324 " + nick + " " + target_channel->get_name() , client.get_fd());
+        else
+            client.send_message(":" + srv_name + " 324 " + nick + " " + target_channel->get_name() + " " + current_modes, client.get_fd());
+        return;
     }
+    if (params.size() < 2)
+        return ;
     Channel* target_channel = server.is_channel_exist(params[0]);
     if(!target_channel)
     {
@@ -62,8 +73,15 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
     }
     else if(params[1] == "+k" || params[1] == "-k")
     {
-        if (params[1][0] == '+')
-            target_channel->set_key(1, params[2]);    
+        if (params[1][0] == '+' )
+        {
+            if (params.size() < 3 || params[2].empty())
+            {
+                client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters\r\n", client.get_fd());
+                return ;
+            }
+            target_channel->set_key(1, params[2]);  
+        }
         else
             target_channel->set_key(0, "");
     }
@@ -90,6 +108,11 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
     {
         if (params[1][0] == '+')
         {
+            if (params.size() < 3 || params[2].empty())
+            {
+                client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters\r\n", client.get_fd());
+                return ;
+            }
             int limit = string_to_int(params[2]);
             if (limit == -1)
                 return ;
