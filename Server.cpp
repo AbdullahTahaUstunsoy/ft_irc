@@ -161,11 +161,6 @@ void Server::handleClients(int fd)
             continue;
         parser.get_message(line);
         parser.parse_message();
-        if (parser.get_command() == "CAP")
-        {
-            if (!parser.get_parameters().empty() && parser.get_parameters()[0] == "LS")
-                client->send_message("CAP * LS :\r\n", client->get_fd());
-        }
         Commands::run_command(*client, parser.get_command(), parser.get_parameters(), *this);
         std::map<int, Client*>::iterator it2 = _clients.find(fd);  
         if(it2 == _clients.end())
