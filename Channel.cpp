@@ -132,9 +132,8 @@ void Channel::left_channel(int fd, std::string message)
 {
     std::map<int, Client*>::iterator it_mem = _members.find(fd);
 
-	std::string msg = ":" + it_mem->second->get_nickname()
-                + "!" + it_mem->second->get_username()
-                + "@127.0.0.1 PART " + this->name 
+std::string msg = it_mem->second->get_prefix()
+                + " PART " + this->name 
 				+ " :"
                 + message;
 
@@ -176,9 +175,8 @@ void Channel::left_channel(int fd)
     if (it_mem == _members.end())
         return;
 
-    std::string msg = ":" + it_mem->second->get_nickname()
-                + "!" + it_mem->second->get_username()
-                + "@127.0.0.1 PART " + this->name;
+    std::string msg = it_mem->second->get_prefix()
+                + " PART " + this->name;
 
 
     for (std::map<int, Client*>::iterator it = _members.begin();

@@ -35,11 +35,11 @@ void Commands::Topic(Client& client, const std::vector<std::string>& params, Ser
                     return ;
                 }
                 target_channel->set_topic(params[1]);
-                target_channel->broadcast_message(":" + nick + " TOPIC " + params[0] + " :" + params[1] + "\r\n", client.get_fd(), 0);
+                target_channel->broadcast_message(client.get_prefix() + " TOPIC " + params[0] + " :" + params[1], client.get_fd(), 0);
                 return ;
             }
             else
-                target_channel->broadcast_message(":" + nick + "!" + client.get_username() + "@localhost TOPIC " + target_channel->get_name() + " :" + target_channel->get_topic() + "\r\n", client.get_fd(), 0);
+                target_channel->broadcast_message(client.get_prefix() + " TOPIC " + target_channel->get_name() + " :" + target_channel->get_topic(), client.get_fd(), 0);
         }
         client.send_message(":" + srv_name + " 442 " + nick + " " + params[0] + " :You're not on that channel", client.get_fd());
         return ;

@@ -17,6 +17,14 @@ int string_to_int(const std::string& str)
     return limit;
 }
 
+static void broadcast_mode_change(Client& client, Channel* target_channel, const std::string& mode, const std::string& arg = "")
+{
+    std::string msg = client.get_prefix() + " MODE " + target_channel->get_name() + " " + mode;
+    if (!arg.empty())
+        msg += " " + arg;
+    target_channel->broadcast_message(msg, client.get_fd(), 0);
+}
+
 void Commands::Mode(Client& client, const std::vector<std::string>& params, Server& server)
 {
     std::string srv_name = server.get_server_name();
@@ -70,6 +78,7 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
             target_channel->set_invite(0);    
         else
             target_channel->set_invite(1);
+        broadcast_mode_change(client, target_channel, params[1]);
     }
     else if(params[1] == "+k" || params[1] == "-k")
     {
@@ -80,10 +89,14 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
                 client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters\r\n", client.get_fd());
                 return ;
             }
-            target_channel->set_key(1, params[2]);  
+            target_channel->set_key(1, params[2]);
+            broadcast_mode_change(client, target_channel, params[1]);
         }
         else
+        {
             target_channel->set_key(0, "");
+            broadcast_mode_change(client, target_channel, params[1]);
+        }
     }
     else if(params[1] == "+t" || params[1] == "-t")
     {
@@ -91,9 +104,15 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
             target_channel->set_topic_rest(1);
         else
             target_channel->set_topic_rest(0);
+        broadcast_mode_change(client, target_channel, params[1]);
     }
     else if(params[1] == "+o" || params[1] == "-o")
     {
+        if (params.size() < 3)
+        {
+            client.send_message(":" + srv_name + " 461 " + nick + " MODE :Not enough parameters\r\n", client.get_fd());
+            return ;
+        }
         int fd = server.get_client_fd(params[2]);
         if (fd == -1)
             return ;
@@ -103,6 +122,7 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
             target_channel->add_operator(fd);
         else
             target_channel->remove_operator(fd);
+        broadcast_mode_change(client, target_channel, params[1], params[2]);
     }
     else if(params[1] == "+l" || params[1] == "-l")
     {
@@ -117,9 +137,13 @@ void Commands::Mode(Client& client, const std::vector<std::string>& params, Serv
             if (limit == -1)
                 return ;
             target_channel->set_member_limit(limit);
+            broadcast_mode_change(client, target_channel, params[1], params[2]);
         }
         else
+        {
             target_channel->set_member_limit(-1);
+            broadcast_mode_change(client, target_channel, params[1]);
+        }
     }
 
 }

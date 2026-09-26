@@ -35,6 +35,13 @@ std::string Client :: get_realname()
 	return (this->realname);
 }
 
+std::string Client::get_prefix() const
+{
+    std::string nick = nickname.empty() ? "*" : nickname;
+    std::string user = username.empty() ? "unknown" : username;
+    return ":" + nick + "!" + user + "@localhost";
+}
+
 void Client::set_register()
 {
 	registered = true;

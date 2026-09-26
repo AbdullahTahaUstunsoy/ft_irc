@@ -259,7 +259,7 @@ int Server::get_client_fd(std::string nick)
 void Server::quit_util(Client& client, std::string message)
 {
     std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
-    std::string quit_msg = ":" + nick + " QUIT :Quit: " + message;
+    std::string quit_msg = client.get_prefix() + " QUIT :Quit: " + message;
     std::map<std::string, Channel*>::iterator it;
 
     for (it = channels.begin(); it != channels.end(); )

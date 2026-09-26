@@ -132,6 +132,7 @@ int main(int argc, char **argv)
 
     if (argc != 2)
     {
+        std::cout << "invalid usage the usage is <./bot channel_name>" << std::endl;
         return (1);
     }
     std::string channel_name = argv[1];

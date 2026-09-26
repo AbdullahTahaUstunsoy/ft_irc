@@ -4,7 +4,7 @@ void Commands::Join(Client& client, const std::vector<std::string>& params, Serv
 {
     std::string srv_name = server.get_server_name();
     std::string nick = client.get_nickname().empty() ? "*" : client.get_nickname();
-    std::string prefix = ":" + nick + "!" + client.get_username() + "@127.0.0.1";
+    std::string prefix = client.get_prefix();
     Channel* target_channel;
     if (params.empty())
     {

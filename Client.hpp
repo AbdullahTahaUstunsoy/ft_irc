@@ -24,6 +24,7 @@ class Client
 		std::string get_nickname();
 		std::string get_username();
 		std::string get_realname();
+		std::string get_prefix() const;
 		bool get_pass();
 		bool is_register();
 		void set_pass();
