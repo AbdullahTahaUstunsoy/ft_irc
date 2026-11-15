@@ -13,7 +13,6 @@ void Commands::Part(Client& client, const std::vector<std::string>& params, Serv
     if (server.is_channel_exist(params[0]))
     {
         Channel *target_channel = server.get_channel(params[0]);
-        std::cout << "PART a gelen channel adi" + params[0] << std::endl;
         if (target_channel->is_member(client.get_fd()))
         {
             if (params.size() == 2)

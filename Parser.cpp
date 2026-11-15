@@ -20,8 +20,6 @@ int Parser :: parse_message()
 	size_t pos;
 	size_t last = message.find_last_not_of(erase_chars);
 
-	std::cout << "-------------------------" << std::endl;
-	std::cout << "Starting Message: "<<parse_msg << std::endl;
 	if (last != std::string::npos)
     	parse_msg.erase(last + 1);
 	else
@@ -46,11 +44,9 @@ int Parser :: parse_message()
 		{
 			this->command = cmd;
 			parse_msg.erase(0, pos + 1);
-			std::cout << "Command: "<< this->command << std::endl;
 		}
 		else
 		{
-			std::cout << "NO COMMAND (HATA MESAJI DÜZELTİLECEK) " << std::endl;
 			return (1);
 		}
 	}
@@ -58,7 +54,7 @@ int Parser :: parse_message()
 	{
 		if (parse_msg[0] == ':')
 		{
-			this->parameters.push_back(parse_msg.substr(1));   // drop the ':' itself, take the rest
+			this->parameters.push_back(parse_msg.substr(1));
 			break;
 		}
 		pos = parse_msg.find(' ');
@@ -73,20 +69,16 @@ int Parser :: parse_message()
 			parse_msg.erase(0, pos + 1);
 		}
 	}
-	std::cout << "---- parameters ----" << std::endl;
-	for (size_t i = 0; i < this->parameters.size(); i++)
-		std::cout << "param[" << i << "]: \"" << this->parameters[i] << "\"" << std::endl;
-	std::cout << "---------------------" << std::endl;
 	
 	return (0);
 }
 
 bool Parser :: is_valid_command(const std::string &cmd) const
 {
-	static const std::string commands[14] = {
+	static const std::string commands[15] = {
 		"PASS", "NICK", "USER", "JOIN", "PRIVMSG",
 		"PART", "KICK", "INVITE", "TOPIC", "MODE",
-		"PING", "PONG", "QUIT", "CAP"
+		"PING", "QUIT", "CAP", "Notice", "NAMES" 
 	};
 	for (int i = 0; i < 14; i++)
 	{

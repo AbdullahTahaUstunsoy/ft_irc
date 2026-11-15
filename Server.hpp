@@ -56,10 +56,9 @@ class Server {
         ~Server();
         void configureServerSocket();
         void runServer();
-        void sendToClient(int fd, const std::string& msg);
         Channel* get_channel(std::string name);
         void delete_channel(std::string channel_name);
-
+        void broadcast_to_client_channels(int client_fd, const std::string& message);
         const std::string& getPassword() const;
 		Client* getClient(int fd);  
 };

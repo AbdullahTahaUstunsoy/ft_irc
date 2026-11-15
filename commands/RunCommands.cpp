@@ -2,7 +2,6 @@
 
 void Commands::run_command(Client& client, const std::string& command, const std::vector<std::string>& params, Server& server)
 {
-		std::cout << " run commands = here 2" << std::endl;
     if (command == "PASS")
         Commands::Pass(client, params, server);
     else if (command == "NICK")
@@ -18,14 +17,20 @@ void Commands::run_command(Client& client, const std::string& command, const std
     else if (command == "JOIN")
         Commands::Join(client, params, server);
     else if (command == "INVITE")
-    {
         Commands::Invite(client, params, server);
-		std::cout << " run commands = here 1" << std::endl;
-    }
     else if (command == "PART")
         Commands::Part(client, params, server);
     else if (command == "TOPIC")
         Commands::Topic(client, params, server);
     else if (command == "MODE")
         Commands::Mode(client, params, server);
+    else if (command == "NOTICE")
+        Commands::Notice(client, params, server);
+    else if (command == "CAP")
+        Commands::Cap(client, params, server);
+    else if (command == "NAMES")
+        Commands::Names(client, params, server);
+    else if (command == "KICK")
+        Commands::Kick(client, params, server);
+    
 }

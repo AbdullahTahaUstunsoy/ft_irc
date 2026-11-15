@@ -89,11 +89,26 @@ nc -C <server_local_ip> <port_number>
 
 Once connected, the client must use the password set at server launch to authenticate and register with the IRC server.
 
-#### Basic Client Commands
-PASS <password>
-NICK <nickname>
-USER <username> 0 * :<realname>
+If you want to use with irssi:
 
+Use irssi command to enter irssi then use /connect <ip_address> <port_number> <password> command to connect to server.
+
+#### Basic Client Commands
+* **PASS** `<password>`
+* **NICK** `<nickname>`
+* **USER** `<username>` 0 * :`<realname>`
+* **JOIN** `<channel_name>` `<key (if necessary)>`
+* **PRIVMSG** `<target>` :`<message>`
+* **PART** `<channel_name>` :`<reason (if necessary)>`
+* **KICK** `<channel_name>` `<nickname>` :`<reason (if necessary)>`
+* **INVITE** `<nickname>` `<channel_name>`
+* **TOPIC** `<channel_name>` :`<new_topic (if necessary)>`
+* **MODE** `<channel_name>` `<flag>` `<extra parameter (if necessary)>`
+* **PING** `<server_or_token>`
+* **QUIT** :`<quit_message (if necessary)>`
+* **CAP** `<LS/END/REQ>`
+* **NOTICE** `<target>` :`<message>`
+* **NAMES** `<channel_name (if necessary)>`
 ---
 
 ### Example Usage Scenario
@@ -128,4 +143,8 @@ To find the server's local IP, run: hostname -I
 
 ### How We Used AI
 * Brainstorming additional edge-case testing scenarios alongside our own tests.
+<<<<<<< HEAD
 * Recommending supplementary documentation and technical resources beyond our initial references.
+=======
+* Recommending supplementary documentation and technical resources beyond our initial references.
+>>>>>>> ugur
